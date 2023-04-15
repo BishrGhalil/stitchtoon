@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stitchtoon"
+version = "0.0.1"
+authors = [
+  { name="Beshr Alghalil", email="beshrghalil@protonmail.com" },
+]
+description = "A powerful program for stitching and cutting webtoons/manhwa/manhua raws."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/BishrGhalil/stitchtoon"
+"Bug Tracker" = "https://github.com/BishrGhalil/issues"
+
+[project.scripts]
+stitchtoon = "stitchtoon.run.launcher:launch"

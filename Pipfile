@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[scripts]
+format = "python -m scripts.formatter"
+
+[packages]
+pillow = "*"
+natsort = "*"
+psd-tools = "*"
+
+[dev-packages]
+black = "*"
+isort = "*"
+flake8 = "*"
+
+[requires]
+python_version = "3.8"

@@ -1,0 +1,12 @@
+
+__logs__/
+
+.vscode/
+
+profile.txt
+
+src/stitchtoon/__pycache__/
+
+*.pyc
+
+test/data/
