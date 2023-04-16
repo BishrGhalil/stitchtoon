@@ -113,17 +113,24 @@ def launch():
         "ignorable_pixels": kwargs.ignorable_pixels,
     }
 
-    process(
-        input=kwargs.input,
-        output=kwargs.output,
-        split_height=kwargs.split_height,
-        output_format=kwargs.output_format,
-        recursive=kwargs.recursive,
-        as_archive=kwargs.as_archive,
-        lossy_quality=kwargs.lossy_quality,
-        params=stitch_params,
-    )
+    try:
+        process(
+            input=kwargs.input,
+            output=kwargs.output,
+            split_height=kwargs.split_height,
+            output_format=kwargs.output_format,
+            recursive=kwargs.recursive,
+            as_archive=kwargs.as_archive,
+            lossy_quality=kwargs.lossy_quality,
+            params=stitch_params,
+        )
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return 1
+    
+    else:
+        return 0
 
 
 if __name__ == "__main__":
-    launch()
+        exit(launch())
