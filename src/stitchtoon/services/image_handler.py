@@ -10,6 +10,7 @@ from .directory_scanner import Image
 from .global_logger import logFunc
 from PIL import Image as pilImage
 from psd_tools import PSDImage
+from datetime import datetime as dt
 
 
 class ImageHandler:
@@ -44,7 +45,7 @@ class ImageHandler:
             # FIXMEE: support archiving psd files
             raise Exception("Can't make PSD archive")
 
-        output_suffix = osp.splitext(output)[1] or ".zip"
+        output_suffix = "" if osp.splitext(output)[1] == ".zip" else ".zip"
         output += output_suffix
 
         zf = zipfile.ZipFile(output, mode="w")
@@ -62,10 +63,13 @@ class ImageHandler:
         as_archive: bool = False,
         quality=100,
     ) -> str:
-        os.makedirs(output, exist_ok=True)
         if as_archive:
+            if osp.isdir(output):
+                output = osp.join(output, dt.now().strftime("%d%m%Y_%H%M%S"))
+            os.makedirs(osp.dirname(output), exist_ok=True)
             self.save_archive(output, images, format, quality)
         else:
+            os.makedirs(output, exist_ok=True)
             for idx, img in enumerate(images, 1):
                 filename = self.filename_handler(f"{idx:02}", format)
                 img.save(osp.join(output, filename), format, quality)
