@@ -18,3 +18,12 @@ cd stitchtoon
 pip instal --user requirements.txt
 pip install .
 ```
+
+## Basic usage
+```
+stitchtoon -i <input-path> -sh <split-height>
+```
+Check out `help` for more advanced options
+```
+stitchtoon --help
+```
