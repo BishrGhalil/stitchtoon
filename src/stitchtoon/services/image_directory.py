@@ -39,4 +39,4 @@ class Image:
 class ImageDirectory:
     path: os.PathLike
     images: list[Image]
-    dirs: list[ImageDirectory] = field(default=())
+    dirs: list[ImageDirectory] = field(default=None)

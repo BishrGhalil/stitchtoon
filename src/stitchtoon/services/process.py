@@ -36,17 +36,22 @@ def process(
         )
     if not osp.lexists(input):
         raise FileNotFoundError(f"Could not found {input}")
-    image_dir = scan(input, recursive)
-    images = handler.load(image_dir.images)
-    images = stitch(images, split_height, **params)
-    format = output_format.lstrip(".")
-    format = FORMAT_MAPPER.get(format, format)
-    handler.save_all(
-        output=output,
-        images=images,
-        format=format,
-        as_archive=as_archive,
-        quality=lossy_quality,
+    working_dirs = scan(input, recursive)
+    for image_dir in working_dirs:
+        images = handler.load(image_dir.images)
+        if not images:
+            continue
+        images = stitch(images, split_height, **params)
+        format = output_format.lstrip(".")
+        format = FORMAT_MAPPER.get(format, format)
+        if recursive:
+            sub_output = osp.join(output, osp.basename(image_dir.path))
+        handler.save_all(
+            output=sub_output,
+            images=images,
+            format=format,
+            as_archive=as_archive,
+            quality=lossy_quality,
     )
     gc.collect()
 

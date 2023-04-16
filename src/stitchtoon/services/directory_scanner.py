@@ -28,7 +28,7 @@ def get_format(filename):
 
 
 @logFunc()
-def scanimgdir(input, sort=True) -> ImageDirectory:
+def scanimgdir(input, sort=True) -> Iterable[ImageDirectory]:
     images = []
     for ent in os.scandir(input):
         if ent.is_file() and is_supported_img(filename=ent.name):
@@ -37,11 +37,12 @@ def scanimgdir(input, sort=True) -> ImageDirectory:
     if not images:
         return None
     images = natsorted(images, key=lambda x: x.path)
-    return ImageDirectory(input, images)
+    image_dir = ImageDirectory(input, images)
+    return (image_dir,)
 
 
 @logFunc()
-def walkimgdir(input, sort=True) -> ImageDirectory:
+def walkimgdir(input, sort=True) -> Iterable[ImageDirectory]:
     images = []
     dirspaths = []
     dirs = []
@@ -61,9 +62,10 @@ def walkimgdir(input, sort=True) -> ImageDirectory:
     for dir in dirspaths:
         res = walkimgdir(dir, sort)
         if res:
-            dirs.append(res)
+            dirs.extend(res)
 
-    return ImageDirectory(input, images, dirs)
+    image_dir = ImageDirectory(input, images)
+    return (image_dir, *dirs)
 
 
 @logFunc()
