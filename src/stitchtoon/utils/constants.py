@@ -21,6 +21,7 @@ FORMAT_MAPPER = {
 
 SIZE_LIMIT_MAPPER = {
     "jpg": 65_535,
+    "jpeg": 65_535,
     "webp": 16_383,
     "png": 300_000,
     "psd": 30_000,

@@ -44,7 +44,7 @@ def get_args():
         dest="output_format",
         type=str,
         default="jpg",
-        choices=["png", "jpg", "webp", "psb", "psd"],
+        choices=["png", "jpeg", "jpg", "webp", "psb", "psd"],
         help="Sets the type/format of the Output Image Files",
     )
     parser.add_argument("-r", "--recursive", dest="recursive", action="store_true")
