@@ -5,6 +5,7 @@ name = "pypi"
 
 [scripts]
 format = "python -m scripts.formatter"
+build="pyinstaller stitchtoon.spec"
 
 [packages]
 pillow = "*"
@@ -15,6 +16,7 @@ psd-tools = "*"
 black = "*"
 isort = "*"
 flake8 = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.8"
