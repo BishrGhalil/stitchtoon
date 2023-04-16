@@ -46,6 +46,8 @@ def process(
         format = FORMAT_MAPPER.get(format, format)
         if recursive:
             sub_output = osp.join(output, osp.basename(image_dir.path))
+        else:
+            sub_output = output
         handler.save_all(
             output=sub_output,
             images=images,
