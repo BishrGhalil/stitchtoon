@@ -1,3 +1,20 @@
 # StitchToon
-A powerful program for stitching and cutting webtoons/manhwa/manhua raws.
-Inspired by [SmartStitch]()
+A powerful package for stitching and cutting webtoons/manhwa/manhua raws.
+
+All thanks to [MechTechnology](https://github.com/MechTechnology) for creating [SmartStitch](https://github.com/MechTechnology/SmartStitch) which is the base of this package.
+
+
+## New features
+- export as archive
+- better output naming handling
+- size limites for defferent output formats
+
+## Install
+
+Build from source
+```
+git clone https://github.com/BishrGhalil/stitchtoon
+cd stitchtoon
+pip instal --user requirements.txt
+pip install .
+```

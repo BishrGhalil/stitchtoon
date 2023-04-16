@@ -31,6 +31,8 @@ def process(
     handler = ImageHandler()
     # Starting Stitch Process
     if split_height > SIZE_LIMIT_MAPPER[output_format]:
+        # FIXMEE: add size limit to width also
+        # TODOO: auto convert psd to psb when size limit exceded
         raise SizeLimitError(
             f"Image type {output_format} supports size up to {SIZE_LIMIT_MAPPER[output_format]}px only"
         )
