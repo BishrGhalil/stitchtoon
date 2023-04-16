@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from .. import __version__
-from ..services.process import process
+from stitchtoon.services.process import process
+from stitchtoon import __version__
 
 
 def positive_int(value):
@@ -102,7 +102,7 @@ def get_args():
     return parser.parse_args()
 
 
-def launch():
+def main():
     kwargs = get_args()
 
     stitch_params = {
@@ -133,4 +133,4 @@ def launch():
 
 
 if __name__ == "__main__":
-        exit(launch())
+        exit(main())

@@ -22,4 +22,4 @@ classifiers = [
 "Bug Tracker" = "https://github.com/BishrGhalil/issues"
 
 [project.scripts]
-stitchtoon = "stitchtoon.run.launcher:launch"
+stitchtoon = "stitchtoon.__main__:main"

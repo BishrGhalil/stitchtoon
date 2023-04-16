@@ -46,7 +46,6 @@ PY3 = version_info[0] >= 3
 
 args = None
 
-from .run.launcher import launch
 from .services.image_directory import Image
 from .services.image_directory import ImageDirectory
 from .services.process import process
