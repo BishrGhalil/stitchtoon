@@ -30,15 +30,18 @@ def process(
 ):
     handler = ImageHandler()
     # Starting Stitch Process
+    if output_format == "psd" and split_height > SIZE_LIMIT_MAPPER[output_format]:
+        output_format = "psb"
     if split_height > SIZE_LIMIT_MAPPER[output_format]:
         # FIXMEE: add size limit to width also
-        # TODOO: auto convert psd to psb when size limit exceded
         raise SizeLimitError(
             f"Image type {output_format} supports size up to {SIZE_LIMIT_MAPPER[output_format]}px only"
         )
     if not osp.lexists(input):
         raise FileNotFoundError(f"Could not found {input}")
     working_dirs = scan(input, recursive)
+    if not working_dirs:
+        raise Exception("Input directory does not contain supported images. try `-r` option for recursive scanning or try another input directory")
     for image_dir in working_dirs:
         images = handler.load(image_dir.images)
         if not images:
@@ -46,17 +49,17 @@ def process(
         images = stitch(images, split_height, **params)
         format = output_format.lstrip(".")
         format = FORMAT_MAPPER.get(format, format)
+        sub_output = output
         if recursive:
             sub_output = osp.join(output, osp.basename(image_dir.path))
-        else:
-            sub_output = output
+
         handler.save_all(
             output=sub_output,
             images=images,
             format=format,
             as_archive=as_archive,
             quality=lossy_quality,
-    )
+        )
     gc.collect()
 
 

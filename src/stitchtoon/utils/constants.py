@@ -16,7 +16,6 @@ SUPPORTED_IMG_TYPES = (
 
 FORMAT_MAPPER = {
     "jpg": "jpeg",
-    "psd": "psb",
 }
 
 SIZE_LIMIT_MAPPER = {
