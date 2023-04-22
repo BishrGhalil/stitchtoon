@@ -14,3 +14,8 @@ test/data/
 build/Build/
 
 dist/
+.gitback/
+
+*.pyd
+
+.venv/

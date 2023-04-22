@@ -41,7 +41,10 @@ def process(
         raise FileNotFoundError(f"Could not found {input}")
     working_dirs = scan(input, recursive)
     if not working_dirs:
-        raise Exception("Input directory does not contain supported images. try `-r` option for recursive scanning or try another input directory")
+        raise Exception(
+            """Input directory does not contain supported images.
+            try `-r` option for recursive scanning or try another input directory"""
+        )
     for image_dir in working_dirs:
         images = handler.load(image_dir.images)
         if not images:
