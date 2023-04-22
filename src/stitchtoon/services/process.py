@@ -70,15 +70,13 @@ def stitch(
     *,
     detection_type="pixel",
     senstivity=90,
+    width_enforce="none",
     custom_width=-1,
     line_steps=5,
     ignorable_pixels=5,
 ):
     manipulator = ImageManipulator()
     detector = select_detector(detection_type=detection_type)
-    width_enforce = (
-        WIDTH_ENFORCEMENT.MANUAL if custom_width > 0 else WIDTH_ENFORCEMENT.NONE
-    )
     images = manipulator.resize(images, width_enforce, custom_width)
     combined_img = manipulator.combine(images)
     slice_points = detector.run(

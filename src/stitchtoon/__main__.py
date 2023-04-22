@@ -1,15 +1,35 @@
 import argparse
+import math
 import sys
 
-from stitchtoon.services.process import process
 from stitchtoon import __version__
+from stitchtoon.services.process import process
 
 
 def positive_int(value):
-    ivalue = int(value)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
-    return ivalue
+    if not value.isdigit() or int(value) <= 0:
+        raise argparse.ArgumentTypeError("Not a valid integer value")
+    return int(value)
+
+
+def size_format(value):
+    value = value.replace("x", "X")
+    size = value.split("X")
+    if len(size) > 2:
+        raise argparse.ArgumentTypeError(
+            "invalid size format. Supported formats `<height>X<width>` or `<height>`. ex: `5000X760`"
+        )
+
+    if len(size) == 1:
+        size.append("0")
+    for idx, s in enumerate(size):
+        if not s.isdigit():
+            raise argparse.ArgumentTypeError(
+                "invalid size format. Supported formats `<height>X<width>` or `<height>`. ex: `5000X760`"
+            )
+        else:
+            size[idx] = int(s)
+    return size
 
 
 def get_args():
@@ -19,6 +39,7 @@ def get_args():
     )
     parser.add_argument(
         "-i",
+        "--input",
         dest="input",
         type=str,
         required=True,
@@ -26,17 +47,19 @@ def get_args():
     )
     parser.add_argument(
         "-o",
+        "--output",
         dest="output",
         type=str,
         required=False,
         help="Saves at specified output path",
     )
     parser.add_argument(
-        "-sh",
-        dest="split_height",
-        type=positive_int,
+        "-s",
+        "--size",
+        dest="size",
+        type=size_format,
         required=True,
-        help="Sets the value of the Rough Panel Height",
+        help="Sets the value of the Rough Panel Height And Width, hXw",
     )
     parser.add_argument(
         "-t",
@@ -51,53 +74,60 @@ def get_args():
     parser.add_argument("-a", "--as-archive", dest="as_archive", action="store_true")
     advanced = parser.add_argument_group("Advanced")
     advanced.add_argument(
-        "-cw",
-        dest="custom_width",
-        type=positive_int,
-        default=-1,
-        help="[Advanced] Forces Fixed Width for All Output Image Files, Default=None (Disabled)",
+        "-w",
+        "--width-enforcement",
+        dest="width_enforcement",
+        type=str,
+        default="none",
+        choices=("none", "auto"),
+        help="Width Enforcement Technique, Default=None)",
     )
     advanced.add_argument(
-        "-dt",
+        "-d",
+        "--detection-type",
         type=str,
         dest="detection_type",
         default="pixel",
         choices=["none", "pixel"],
-        help="[Advanced] Sets the type of Slice Location Detection, Default=pixel (Pixel Comparison)",
+        help="Sets the type of Slice Location Detection, Default=pixel (Pixel Comparison)",
     )
     advanced.add_argument(
-        "-s",
+        "-e",
+        "--sensitivity",
         dest="senstivity",
         type=int,
         default=90,
         choices=range(0, 101),
         metavar="[0-100]",
-        help="[Advanced] Sets the Object Detection Senstivity Percentage, Default=90 (10 percent tolerance)",
+        help="Sets the Object Detection Senstivity Percentage, Default=90 (10 percent tolerance)",
     )
     advanced.add_argument(
-        "-lq",
+        "-q",
+        "--quality",
         dest="lossy_quality",
         type=int,
         default=100,
         choices=range(0, 101),
         metavar="[1-100]",
-        help="[Advanced] Sets the quality of lossy file types like .jpg if used, Default=100 (100 percent)",
+        help="Sets the quality of lossy file types like .jpg if used, Default=100 (100 percent)",
     )
     advanced.add_argument(
-        "-ip",
+        "-g",
+        "--ingorable_pixels",
         dest="ignorable_pixels",
         type=positive_int,
         default=5,
-        help="[Advanced] Sets the value of Ignorable Border Pixels, Default=5 (5px)",
+        help="Sets the value of Ignorable Border Pixels, Default=5 (5px)",
     )
     advanced.add_argument(
-        "-sl",
+        "-l",
+        "--line-steps",
         dest="line_steps",
         type=int,
         default=5,
         choices=range(1, 100),
         metavar="[1-100]",
-        help="[Advanced] Sets the value of Scan Line Step, Default=5 (5px)",
+        help="Sets the value of Scan Line Step, Default=5 (5px)",
     )
     return parser.parse_args()
 
@@ -108,7 +138,8 @@ def main():
     stitch_params = {
         "detection_type": kwargs.detection_type,
         "senstivity": kwargs.senstivity,
-        "custom_width": kwargs.custom_width,
+        "width_enforce": kwargs.width_enforcement,
+        "custom_width": kwargs.size[1],
         "line_steps": kwargs.line_steps,
         "ignorable_pixels": kwargs.ignorable_pixels,
     }
@@ -117,7 +148,7 @@ def main():
         process(
             input=kwargs.input,
             output=kwargs.output,
-            split_height=kwargs.split_height,
+            split_height=kwargs.size[0],
             output_format=kwargs.output_format,
             recursive=kwargs.recursive,
             as_archive=kwargs.as_archive,
@@ -127,10 +158,10 @@ def main():
     except Exception as e:
         print(f"ERROR: {e}")
         return 1
-    
+
     else:
         return 0
 
 
 if __name__ == "__main__":
-        exit(main())
+    exit(main())
