@@ -1,7 +1,7 @@
 from ..utils.constants import WIDTH_ENFORCEMENT
 from .global_logger import logFunc
 from .image_directory import Image
-from .progress import ProgressHandler
+from .progressbar import ProgressHandler
 from PIL import Image as pilImage
 
 

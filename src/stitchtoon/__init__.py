@@ -49,4 +49,4 @@ args = None
 from .services.image_directory import Image
 from .services.image_directory import ImageDirectory
 from .services.process import process, stitch
-from .services.progress import ProgressHandler
+from .services.progressbar import ProgressHandler

@@ -9,7 +9,7 @@ from datetime import datetime as dt
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
 from .directory_scanner import Image
 from .global_logger import logFunc
-from .progress import ProgressHandler
+from .progressbar import ProgressHandler
 from PIL import Image as pilImage
 from psd_tools import PSDImage
 
