@@ -55,6 +55,7 @@ def walkimgdir(input, sort=True) -> Iterable[ImageDirectory]:
 
     if images:
         images = natsorted(images, key=lambda x: x.path)
+        dirs.append(ImageDirectory(input, images))
 
     if dirspaths:
         dirspaths = natsorted(dirspaths)
@@ -64,8 +65,7 @@ def walkimgdir(input, sort=True) -> Iterable[ImageDirectory]:
         if res:
             dirs.extend(res)
 
-    image_dir = ImageDirectory(input, images)
-    return (image_dir, *dirs)
+    return dirs
 
 
 @logFunc()
