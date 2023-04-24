@@ -57,9 +57,6 @@ class ImageHandler:
             # FIXMEE: support archiving psd files
             raise Exception("Can't make PSD archive")
 
-        output_suffix = "" if osp.splitext(output)[1] == ".zip" else ".zip"
-        output += output_suffix
-
         zf = zipfile.ZipFile(output, mode="w")
         images_len = len(images)
         for idx, image in enumerate(images, 1):
@@ -80,8 +77,9 @@ class ImageHandler:
         increament=0,
     ) -> str:
         if as_archive:
-            if osp.isdir(output):
-                output = osp.join(output, dt.now().strftime("%d%m%Y_%H%M%S"))
+            if osp.splitext(output)[1] != ".zip":
+                output = osp.join(output, dt.now().strftime("%d%m%Y_%H%M%S.zip"))
+
             os.makedirs(osp.dirname(output), exist_ok=True)
             self.save_archive(output, images, format, quality, progress, increament)
         else:
