@@ -58,6 +58,8 @@ def process(
         )
     if not osp.lexists(input):
         raise FileNotFoundError(f"Could not found {input}")
+    if not output:
+        raise Exception("Output path is not provided")
     working_dirs = scan(input, recursive)
     if not working_dirs:
         raise Exception(

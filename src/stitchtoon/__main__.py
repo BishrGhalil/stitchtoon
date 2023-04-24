@@ -50,7 +50,7 @@ def get_args():
         "--output",
         dest="output",
         type=str,
-        required=False,
+        required=True,
         help="Saves at specified output path",
     )
     parser.add_argument(
