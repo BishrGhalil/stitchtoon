@@ -1,5 +1,4 @@
-from ..utils.constants import DETECTION_TYPE
-from ..utils.constants import WIDTH_ENFORCEMENT
+from ..utils.constants import DETECTION_TYPE, WIDTH_ENFORCEMENT
 
 
 class AppSettings:

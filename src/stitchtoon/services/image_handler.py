@@ -6,12 +6,13 @@ import os.path as osp
 import zipfile
 from datetime import datetime as dt
 
+from PIL import Image as pilImage
+from psd_tools import PSDImage
+
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
 from .directory_scanner import Image
 from .global_logger import logFunc
 from .progressbar import ProgressHandler
-from PIL import Image as pilImage
-from psd_tools import PSDImage
 
 
 class ImageHandler:
@@ -89,5 +90,7 @@ class ImageHandler:
             for idx, img in enumerate(images, 1):
                 filename = self.filename_handler(f"{idx:02}", format)
                 img.save(osp.join(output, filename), format, quality)
-                progress.update(progress.value + increament, f"Saving {idx}/{images_len}")
+                progress.update(
+                    progress.value + increament, f"Saving {idx}/{images_len}"
+                )
         return output

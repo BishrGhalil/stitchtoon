@@ -1,8 +1,7 @@
 import json
 import os
 
-from ..models import AppProfiles
-from ..models import AppSettings
+from ..models import AppProfiles, AppSettings
 from ..services import logFunc
 from ..utils.constants import SETTINGS_REL_DIR
 from ..utils.errors import ProfileException

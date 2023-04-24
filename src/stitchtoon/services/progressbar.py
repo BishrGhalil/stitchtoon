@@ -25,6 +25,7 @@ class ProgressHandler:
 class DefaultCliProgress(ProgressHandler):
     def __init__(self, prefix="", size=60, out=None):
         from progress.bar import Bar
+
         if not out:
             from sys import stdout
 

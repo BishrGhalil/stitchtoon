@@ -1,8 +1,9 @@
+from PIL import Image as pilImage
+
 from ..utils.constants import WIDTH_ENFORCEMENT
 from .global_logger import logFunc
 from .image_directory import Image
 from .progressbar import ProgressHandler
-from PIL import Image as pilImage
 
 
 class ImageManipulator:
@@ -35,7 +36,9 @@ class ImageManipulator:
         return img_objs
 
     @logFunc(inclass=True)
-    def combine(self, img_objs: list[Image], progress=ProgressHandler(), increament=0) -> Image:
+    def combine(
+        self, img_objs: list[Image], progress=ProgressHandler(), increament=0
+    ) -> Image:
         """Combines given image objs to a single vertically stacked single image obj."""
         widths, heights = zip(*(img.pil.size for img in img_objs))
         combined_img_width = max(widths)

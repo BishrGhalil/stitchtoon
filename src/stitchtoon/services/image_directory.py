@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 
-from ..utils.constants import FORMAT_MAPPER
-from ..utils.constants import PHOTOSHOP_FILE_TYPES
-from ..utils.constants import SUPPORTED_IMG_TYPES
 from PIL import Image as pilImage
 from psd_tools import PSDImage
+
+from ..utils.constants import FORMAT_MAPPER, PHOTOSHOP_FILE_TYPES, SUPPORTED_IMG_TYPES
 
 
 @dataclass

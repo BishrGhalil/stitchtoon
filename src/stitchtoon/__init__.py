@@ -46,7 +46,6 @@ PY3 = version_info[0] >= 3
 
 args = None
 
-from .services.image_directory import Image
-from .services.image_directory import ImageDirectory
+from .services.image_directory import Image, ImageDirectory
 from .services.process import process, stitch
 from .services.progressbar import ProgressHandler

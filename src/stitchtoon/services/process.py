@@ -3,19 +3,11 @@ import os.path as osp
 from time import time
 
 from stitchtoon.detectors import select_detector
-from stitchtoon.services import GlobalLogger
-from stitchtoon.services import ImageHandler
-from stitchtoon.services import ImageManipulator
-from stitchtoon.services import logFunc
-from stitchtoon.services.directory_scanner import Image
-from stitchtoon.services.directory_scanner import scan
-from stitchtoon.services.progressbar import ProgressHandler, DefaultCliProgress
-from stitchtoon.utils.constants import FORMAT_MAPPER
-from stitchtoon.utils.constants import OUTPUT_SUFFIX
-from stitchtoon.utils.constants import SIZE_LIMIT_MAPPER
-from stitchtoon.utils.constants import WIDTH_ENFORCEMENT
+from stitchtoon.services import GlobalLogger, ImageHandler, ImageManipulator, logFunc
+from stitchtoon.services.directory_scanner import Image, scan
+from stitchtoon.services.progressbar import DefaultCliProgress, ProgressHandler
+from stitchtoon.utils.constants import FORMAT_MAPPER, OUTPUT_SUFFIX, SIZE_LIMIT_MAPPER, WIDTH_ENFORCEMENT
 from stitchtoon.utils.errors import SizeLimitError
-
 
 # Must have a sum of 100
 PROGRESS_PERCENTAGE = {
@@ -114,7 +106,7 @@ def stitch(
     split_height: int,
     *,
     progress=ProgressHandler(),
-    increament = 0,
+    increament=0,
     detection_type="pixel",
     senstivity=90,
     width_enforce="none",

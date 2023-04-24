@@ -1,6 +1,5 @@
 from enum import IntEnum
 
-
 # Static Variables
 LOG_REL_DIR = "__logs__"
 SETTINGS_REL_DIR = "__settings__"
