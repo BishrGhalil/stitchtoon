@@ -24,41 +24,24 @@ class ProgressHandler:
 
 class DefaultCliProgress(ProgressHandler):
     def __init__(self, prefix="", size=60, out=None):
-
+        from progress.bar import Bar
         if not out:
             from sys import stdout
+
             out = stdout
         super().__init__(prefix, size)
+        self.bar = Bar(max=100, suffix="%(percent)d%% - %(eta)s second(s) left")
         self.out = out
+        self.value = 0
 
     def start(self):
         self.value = 0
-
-    def show(self, msg):
-        if msg:
-            self.prefix = msg
-
-        x = int(self.size * self.value / 100)
-        print(
-            "{} {}{}".format(self.prefix, u"🬋"* x, "-"* (self.size - x), self.value),
-            end="\r",
-            file=self.out,
-            flush=True,
-        )
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        if self._value == value:
-            return
-        self._value = value
+        self.bar.start()
 
     def finish(self):
-        print("\n", flush=True, file=self.out)
+        self.bar.finish()
 
     def update(self, value, msg=""):
         self.value = value
-        self.show(msg)
+        self.bar.message = msg
+        self.bar.next(value)
