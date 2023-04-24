@@ -48,5 +48,5 @@ args = None
 
 from .services.image_directory import Image
 from .services.image_directory import ImageDirectory
-from .services.process import process
-from .services.process import stitch
+from .services.process import process, stitch
+from .services.progress import ProgressHandler

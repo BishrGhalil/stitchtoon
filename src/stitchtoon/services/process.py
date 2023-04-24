@@ -9,11 +9,21 @@ from stitchtoon.services import ImageManipulator
 from stitchtoon.services import logFunc
 from stitchtoon.services.directory_scanner import Image
 from stitchtoon.services.directory_scanner import scan
+from stitchtoon.services.progress import ProgressHandler, DefaultCliProgress
 from stitchtoon.utils.constants import FORMAT_MAPPER
 from stitchtoon.utils.constants import OUTPUT_SUFFIX
 from stitchtoon.utils.constants import SIZE_LIMIT_MAPPER
 from stitchtoon.utils.constants import WIDTH_ENFORCEMENT
 from stitchtoon.utils.errors import SizeLimitError
+
+
+# Must have a sum of 100
+PROGRESS_PERCENTAGE = {
+    "scan": 10,
+    "stitch": 70,
+    "loading": 10,
+    "save": 10,
+}
 
 
 @logFunc()
@@ -26,9 +36,18 @@ def process(
     recursive=True,
     as_archive=False,
     lossy_quality=90,
+    progress=None,
+    show_progress=False,
     params,
 ):
     handler = ImageHandler()
+    if not progress:
+        progress = ProgressHandler()
+    if show_progress:
+        progress = DefaultCliProgress()
+    progress.start()
+    output_format = output_format.lower()
+
     # Starting Stitch Process
     if output_format == "psd" and split_height > SIZE_LIMIT_MAPPER[output_format]:
         output_format = "psb"
@@ -42,27 +61,48 @@ def process(
     working_dirs = scan(input, recursive)
     if not working_dirs:
         raise Exception(
-            """Input directory does not contain supported images.
-            try `-r` option for recursive scanning or try another input directory"""
+            "Input directory does not contain supported images. Try again with batch mode."
         )
+
+    progress.update(progress.value + PROGRESS_PERCENTAGE["scan"], "Stichting")
+    working_dirs_len = len(working_dirs)
     for image_dir in working_dirs:
-        images = handler.load(image_dir.images)
+        images_len = len(image_dir.images)
+        per_dir_percentage = PROGRESS_PERCENTAGE["loading"] / working_dirs_len
+        images = handler.load(
+            image_dir.images,
+            progress=progress,
+            increament=per_dir_percentage / images_len,
+        )
         if not images:
             continue
-        images = stitch(images, split_height, **params)
+        per_dir_percentage = PROGRESS_PERCENTAGE["stitch"] / working_dirs_len
+        images = stitch(
+            images,
+            split_height,
+            progress=progress,
+            increament=per_dir_percentage / images_len,
+            **params,
+        )
+        images_len = len(images)
         format = output_format.lstrip(".")
         format = FORMAT_MAPPER.get(format, format)
         sub_output = output
         if recursive:
             sub_output = osp.join(output, osp.basename(image_dir.path))
 
+        per_dir_percentage = PROGRESS_PERCENTAGE["save"] / working_dirs_len
         handler.save_all(
             output=sub_output,
             images=images,
             format=format,
             as_archive=as_archive,
             quality=lossy_quality,
+            progress=progress,
+            increament=per_dir_percentage / images_len,
         )
+    progress.update(100, "Completed")
+    progress.finish()
     gc.collect()
 
 
@@ -71,6 +111,8 @@ def stitch(
     images: list[Image],
     split_height: int,
     *,
+    progress=ProgressHandler(),
+    increament = 0,
     detection_type="pixel",
     senstivity=90,
     width_enforce="none",
@@ -81,7 +123,7 @@ def stitch(
     manipulator = ImageManipulator()
     detector = select_detector(detection_type=detection_type)
     images = manipulator.resize(images, width_enforce, custom_width)
-    combined_img = manipulator.combine(images)
+    combined_img = manipulator.combine(images, progress=progress, increament=increament)
     slice_points = detector.run(
         combined_img,
         split_height,

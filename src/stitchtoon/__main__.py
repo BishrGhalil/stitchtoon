@@ -72,6 +72,14 @@ def get_args():
     )
     parser.add_argument("-r", "--recursive", dest="recursive", action="store_true")
     parser.add_argument("-a", "--as-archive", dest="as_archive", action="store_true")
+    parser.add_argument(
+        "-p",
+        "--progress",
+        dest="show_progress",
+        action="store_true",
+        help="Shows a progress bar",
+        default=False,
+    )
     advanced = parser.add_argument_group("Advanced")
     advanced.add_argument(
         "-w",
@@ -153,6 +161,7 @@ def main():
             recursive=kwargs.recursive,
             as_archive=kwargs.as_archive,
             lossy_quality=kwargs.lossy_quality,
+            show_progress=kwargs.show_progress,
             params=stitch_params,
         )
     except Exception as e:

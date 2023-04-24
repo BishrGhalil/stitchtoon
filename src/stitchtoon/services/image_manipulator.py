@@ -1,6 +1,7 @@
 from ..utils.constants import WIDTH_ENFORCEMENT
 from .global_logger import logFunc
 from .image_directory import Image
+from .progress import ProgressHandler
 from PIL import Image as pilImage
 
 
@@ -34,17 +35,19 @@ class ImageManipulator:
         return img_objs
 
     @logFunc(inclass=True)
-    def combine(self, img_objs: list[Image]) -> Image:
+    def combine(self, img_objs: list[Image], progress=ProgressHandler(), increament=0) -> Image:
         """Combines given image objs to a single vertically stacked single image obj."""
         widths, heights = zip(*(img.pil.size for img in img_objs))
         combined_img_width = max(widths)
         combined_img_height = sum(heights)
         combined_img = pilImage.new("RGB", (combined_img_width, combined_img_height))
         combine_offset = 0
-        for img in img_objs:
+        images_len = len(img_objs)
+        for idx, img in enumerate(img_objs, 1):
             combined_img.paste(img.pil, (0, combine_offset))
             combine_offset += img.pil.size[1]
             img.pil.close()
+            progress.update(progress.value + increament, f"Combined {idx}/{images_len}")
 
         img = img_objs[0].copy()
         img.pil = combined_img
