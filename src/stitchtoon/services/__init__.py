@@ -2,15 +2,15 @@ from .directory_scanner import scan, scanimgdir, walkimgdir
 from .global_logger import GlobalLogger, logFunc
 from .image_handler import ImageHandler
 from .image_manipulator import ImageManipulator
-from .postprocess_runner import PostProcessRunner
-from .settings_handler import SettingsHandler
+from .postprocess_runner import postprocess_run
 
 __all__ = [
     logFunc,
     GlobalLogger,
     scan,
+    scanimgdir,
+    walkimgdir,
     ImageHandler,
     ImageManipulator,
-    SettingsHandler,
-    PostProcessRunner,
+    postprocess_run,
 ]
