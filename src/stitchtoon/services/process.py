@@ -3,8 +3,8 @@ import os.path as osp
 from time import time
 
 from stitchtoon.detectors import select_detector
-from stitchtoon.services import GlobalLogger, ImageHandler, ImageManipulator, logFunc
-from stitchtoon.services.directory_scanner import Image, scan
+from stitchtoon.services import GlobalLogger, ImageHandler, ImageManipulator, logFunc, scan
+from stitchtoon.services.image_directory import Image
 from stitchtoon.services.progressbar import DefaultCliProgress, ProgressHandler
 from stitchtoon.utils.constants import FORMAT_MAPPER, OUTPUT_SUFFIX, SIZE_LIMIT_MAPPER, WIDTH_ENFORCEMENT
 from stitchtoon.utils.errors import SizeLimitError

@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image as pilImage
 
-from ..services.directory_scanner import Image
+from ..services.image_directory import Image
 from ..services.global_logger import logFunc
 
 

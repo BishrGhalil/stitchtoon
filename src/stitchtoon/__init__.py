@@ -47,7 +47,7 @@ PY3 = version_info[0] >= 3
 args = None
 
 from .services.image_directory import Image, ImageDirectory
-from .services.directory_scanner import scanimgdir, walkimgdir, is_supported_img
+from .services.scanner import scanimgdir, walkimgdir, is_supported_img
 from .services.process import process, stitch
 from .services.progressbar import ProgressHandler
 
