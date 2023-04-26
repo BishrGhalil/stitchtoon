@@ -39,7 +39,9 @@ class ImageHandler:
             if image.format not in PHOTOSHOP_FILE_TYPES:
                 image.pil = pilImage.open(image.path)
             else:
-                image.pil = PSDImage.open(image.path).topil()
+                psd = PSDImage.open(image.path)
+                image.pil = psd.topil()
+                del psd
             progress.update(progress.value + increament, f"Loading {idx}/{images_len}")
         return images
 

@@ -25,6 +25,7 @@ class Image:
         if format in PHOTOSHOP_FILE_TYPES:
             psd_obj = PSDImage.frompil(self.pil)
             psd_obj.save(fp)
+            del psd_obj
         else:
             self.pil.save(fp, format=format, quality=quality)
             self.pil.close()
