@@ -29,7 +29,7 @@ Via Pip
 pip install stitchtoon
 ```
 
-Build from source
+Install from source
 ```
 git clone https://github.com/BishrGhalil/stitchtoon
 cd stitchtoon
@@ -39,7 +39,7 @@ pip install .
 
 ## Basic usage
 ```
-stitchtoon -i <input-path> -sh <split-height>
+stitchtoon -i <input-path> -s <split-height>
 ```
 Check out `help` for more advanced options
 ```
