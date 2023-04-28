@@ -7,7 +7,6 @@ src/stitchtoon/__pycache__/
 
 *.pyc
 
-test/data/
 
 build/Build/
 

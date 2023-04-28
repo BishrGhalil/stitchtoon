@@ -19,6 +19,7 @@ isort = "*"
 flake8 = "*"
 pyinstaller = "*"
 mypy-lang = "*"
+tox = "*"
 
 [requires]
 python_version = "3.*"
