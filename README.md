@@ -9,9 +9,6 @@
   <a href="https://github.com/BishrGhalil/stitchtoon/releases/latest">
     <img src="https://img.shields.io/github/release-date/BishrGhalil/stitchtoon">
   </a>
-  <a href="https://github.com/BishrGhalil/stitchtoon/releases/">
-    <img src="https://img.shields.io/github/downloads/BishrGhalil/stitchtoon/total">
-  </a>
   <a href="https://github.com/BishrGhalil/stitchtoon/tree/dev">
     <img src="https://img.shields.io/github/last-commit/BishrGhalil/stitchtoon">
   </a>
@@ -27,6 +24,10 @@
 - size limites for defferent output formats
 
 ## Install
+Via Pip
+```
+pip install stitchtoon
+```
 
 Build from source
 ```
