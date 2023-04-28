@@ -8,14 +8,23 @@ from .progressbar import ProgressHandler
 
 class ImageManipulator:
     @logFunc(inclass=True)
+    @staticmethod
     def resize(
-        self,
         img_objs: list[Image],
         enforce_setting: WIDTH_ENFORCEMENT,
         custom_width: int = 720,
     ) -> list[Image]:
-        """Resizes all given images according to the set enforcement setting."""
-        if enforce_setting == "none" and not custom_width:
+        """Resizes all given images according to the set enforcement setting.
+
+        Args:
+            img_objs (list[Image])
+            enforce_setting WIDTH_ENFORCEMENT
+            custom_width (int, optional). Defaults to 720.
+
+        Returns:
+            list[Image]
+        """
+
         if enforce_setting == WIDTH_ENFORCEMENT.NONE.value and not custom_width:
             return img_objs
         # Resizing Image Logic depending on enforcement settings
@@ -37,11 +46,23 @@ class ImageManipulator:
         return img_objs
 
     @logFunc(inclass=True)
+    @staticmethod
     def combine(
-        self, img_objs: list[Image], progress=ProgressHandler(), increament=0
+        img_objs: list[Image], progress: ProgressHandler = None, increament=0
     ) -> Image:
-        """Combines given image objs to a single vertically stacked single image obj."""
-        widths, heights = zip(*(img.pil.size for img in img_objs))
+        """Combines given image objs to a single vertically stacked single image obj.
+
+        Args:
+            img_objs (list[Image])
+            progress (_type_, optional)
+            increament (int, optional). Defaults to 0.
+
+        Returns:
+            Image
+        """
+
+        if not progress:
+            progress = ProgressHandler()
         widths, heights = zip(*(img.size for img in img_objs))
         combined_img_width = max(widths)
         combined_img_height = sum(heights)
@@ -59,9 +80,19 @@ class ImageManipulator:
         return img
 
     @logFunc(inclass=True)
-    def slice(self, combined_img: Image, slice_locations: list[int]) -> list[Image]:
-        """Combines given combined img to into multiple img slices given the slice locations."""
-        max_width = combined_img.pil.size[0]
+    @staticmethod
+    def slice(combined_img: Image, slice_locations: list[int]) -> list[Image]:
+        """Combines given combined img to into multiple img slices given the slice locations.
+
+        Args:
+            combined_img (Image)
+            slice_locations (list[int])
+
+        Returns:
+            list[Image]
+        """
+
+        max_width = combined_img.width
         img_objs = []
         for index in range(1, len(slice_locations)):
             upper_limit = slice_locations[index - 1]
