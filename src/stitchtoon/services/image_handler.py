@@ -10,8 +10,8 @@ from PIL import Image as pilImage
 from psd_tools import PSDImage
 
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
-from .image_directory import Image
 from .global_logger import logFunc
+from .image_directory import Image
 from .progressbar import ProgressHandler
 
 
