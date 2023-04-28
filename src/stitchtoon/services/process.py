@@ -8,6 +8,7 @@ from stitchtoon.services.image_directory import Image
 from stitchtoon.services.progressbar import DefaultCliProgress, ProgressHandler
 from stitchtoon.utils.constants import FORMAT_MAPPER, OUTPUT_SUFFIX, SIZE_LIMIT_MAPPER, WIDTH_ENFORCEMENT
 from stitchtoon.utils.errors import SizeLimitError
+    WIDTH_ENFORCEMENT,
 
 # Must have a sum of 100
 PROGRESS_PERCENTAGE = {
@@ -109,7 +110,7 @@ def stitch(
     increament=0,
     detection_type="pixel",
     senstivity=90,
-    width_enforce="none",
+    width_enforce: str = StitchDefaults.WIDTH_ENFORCE,
     custom_width=-1,
     line_steps=5,
     ignorable_pixels=5,

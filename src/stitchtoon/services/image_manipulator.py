@@ -11,18 +11,19 @@ class ImageManipulator:
     def resize(
         self,
         img_objs: list[Image],
-        enforce_setting: str,
+        enforce_setting: WIDTH_ENFORCEMENT,
         custom_width: int = 720,
     ) -> list[Image]:
         """Resizes all given images according to the set enforcement setting."""
         if enforce_setting == "none" and not custom_width:
+        if enforce_setting == WIDTH_ENFORCEMENT.NONE.value and not custom_width:
             return img_objs
         # Resizing Image Logic depending on enforcement settings
         new_img_width = 0
-        if enforce_setting == "auto":
+        if enforce_setting == WIDTH_ENFORCEMENT.AUTO.value:
             widths, heights = zip(*(img.pil.size for img in img_objs))
             new_img_width = min(widths)
-        elif enforce_setting == "fixed" or custom_width:
+        elif enforce_setting == WIDTH_ENFORCEMENT.FIXED.value or custom_width:
             new_img_width = custom_width
         for img in img_objs:
             if img.pil.size[0] == new_img_width:
@@ -31,7 +32,7 @@ class ImageManipulator:
             new_img_height = int(img_ratio * new_img_width)
             if new_img_height > 0:
                 img.pil = img.pil.resize(
-                    (new_img_width, new_img_height), pilImage.ANTIALIAS
+                    (new_img_width, new_img_height), pilImage.LANCZOS
                 )
         return img_objs
 

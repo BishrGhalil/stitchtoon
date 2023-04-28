@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 # Static Variables
 LOG_REL_DIR = "__logs__"
@@ -30,12 +30,12 @@ PHOTOSHOP_FILE_TYPES = ("psd", "psb")
 
 
 # Static Enums
-class WIDTH_ENFORCEMENT(IntEnum):
-    NONE = 0
-    AUTOMATIC = 1
-    MANUAL = 2
+class WIDTH_ENFORCEMENT(Enum):
+    NONE = "none"
+    AUTO = "auto"
+    FIXED = "fixed"
 
 
-class DETECTION_TYPE(IntEnum):
-    NO_DETECTION = 0
-    PIXEL_COMPARISON = 1
+class DETECTION_TYPE(Enum):
+    NO_DETECTION = "none"
+    PIXEL_COMPARISON = "pixel"
