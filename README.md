@@ -27,6 +27,10 @@
 - size limites for defferent output formats
 
 ## Install
+Via Pip
+```
+pip install stitchtoon
+```
 
 Build from source
 ```
