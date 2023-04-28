@@ -150,7 +150,9 @@ def stitch(
         progress = _get_progressbar()
     detector = select_detector(detection_type=detection_type)
     images = ImageManipulator.resize(images, width_enforce, custom_width)
-    combined_img = ImageManipulator.combine(images, progress=progress, increament=increament)
+    combined_img = ImageManipulator.combine(
+        images, progress=progress, increament=increament
+    )
     slice_points = detector.run(
         combined_img,
         split_height,
