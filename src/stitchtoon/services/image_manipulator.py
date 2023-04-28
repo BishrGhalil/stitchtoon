@@ -21,14 +21,14 @@ class ImageManipulator:
         # Resizing Image Logic depending on enforcement settings
         new_img_width = 0
         if enforce_setting == WIDTH_ENFORCEMENT.AUTO.value:
-            widths, heights = zip(*(img.pil.size for img in img_objs))
+            widths, heights = zip(*(img.size for img in img_objs))
             new_img_width = min(widths)
         elif enforce_setting == WIDTH_ENFORCEMENT.FIXED.value or custom_width:
             new_img_width = custom_width
         for img in img_objs:
-            if img.pil.size[0] == new_img_width:
+            if img.width == new_img_width:
                 continue
-            img_ratio = float(img.pil.size[1] / img.pil.size[0])
+            img_ratio = float(img.height / img.width)
             new_img_height = int(img_ratio * new_img_width)
             if new_img_height > 0:
                 img.pil = img.pil.resize(
@@ -42,6 +42,7 @@ class ImageManipulator:
     ) -> Image:
         """Combines given image objs to a single vertically stacked single image obj."""
         widths, heights = zip(*(img.pil.size for img in img_objs))
+        widths, heights = zip(*(img.size for img in img_objs))
         combined_img_width = max(widths)
         combined_img_height = sum(heights)
         combined_img = pilImage.new("RGB", (combined_img_width, combined_img_height))
@@ -49,7 +50,7 @@ class ImageManipulator:
         images_len = len(img_objs)
         for idx, img in enumerate(img_objs, 1):
             combined_img.paste(img.pil, (0, combine_offset))
-            combine_offset += img.pil.size[1]
+            combine_offset += img.height
             img.pil.close()
             progress.update(progress.value + increament, f"Combined {idx}/{images_len}")
 
