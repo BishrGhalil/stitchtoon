@@ -13,11 +13,15 @@ SUPPORTED_IMG_TYPES = (
     "psb",
 )
 
-FORMAT_MAPPER = {
+FORMAT_NAME_MAPPER = {
     "jpg": "jpeg",
 }
 
-SIZE_LIMIT_MAPPER = {
+FORMAT_SIZE_MAPPER = {
+    "psd": "psb",
+}
+
+SIZE_LIMITS = {
     "jpg": 65_535,
     "jpeg": 65_535,
     "webp": 16_383,
@@ -39,3 +43,21 @@ class WIDTH_ENFORCEMENT(Enum):
 class DETECTION_TYPE(Enum):
     NO_DETECTION = "none"
     PIXEL_COMPARISON = "pixel"
+
+
+class ProcessDefaults:
+    OUTPUT_FORMAT: str = "jpeg"
+    RECURSIVE: bool = True
+    AS_ARCHIVE: bool = False
+    LOSSY_QUALITY: int = 90
+    SHOW_PROGRESS: bool = False
+
+
+class StitchDefaults:
+    INCREAMENT: int = 0
+    DETECTION_TYPE: str = DETECTION_TYPE.NO_DETECTION.value
+    SENSTIVITY: int = 90
+    WIDTH_ENFORCE: str = "none"
+    CUSTOM_WIDTH: int = -1
+    LINE_STEPS: int = 5
+    IGNORABLE_PIXELS: int = 5
