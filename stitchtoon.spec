@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['src\\stitchtoon.py'],
+    ['src\\__main__.py'],
     pathex=[],
     binaries=[],
     datas=[],
