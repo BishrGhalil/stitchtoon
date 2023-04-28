@@ -41,7 +41,7 @@ class ImageManipulator:
             new_img_height = int(img_ratio * new_img_width)
             if new_img_height > 0:
                 img.pil = img.pil.resize(
-                    (new_img_width, new_img_height), pilImage.LANCZOS
+                    (new_img_width, new_img_height), pilImage.Resampling.LANCZOS
                 )
         return img_objs
 
