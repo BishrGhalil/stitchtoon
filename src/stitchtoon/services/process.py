@@ -123,7 +123,7 @@ def stitch(
     progress: ProgressHandler = None,
     increament: int = StitchDefaults.INCREAMENT,
     detection_type: str = StitchDefaults.DETECTION_TYPE,
-    senstivity: int = StitchDefaults.SENSTIVITY,
+    sensitivity: int = StitchDefaults.SENSITIVITY,
     width_enforce: str = StitchDefaults.WIDTH_ENFORCE,
     custom_width: int = StitchDefaults.CUSTOM_WIDTH,
     line_steps: int = StitchDefaults.LINE_STEPS,
@@ -137,7 +137,7 @@ def stitch(
         progress (ProgressHandler, optional): progressbar handler. Defaults to None.
         increament (int, optional): progressbar increament factor. Defaults to StitchDefaults.INCREAMENT.
         detection_type (str, optional): Defaults to StitchDefaults.DETECTION_TYPE.
-        senstivity (int, optional): Defaults to StitchDefaults.SENSTIVITY.
+        sensitivity (int, optional): Defaults to StitchDefaults.SENSITIVITY.
         width_enforce (str, optional): Defaults to StitchDefaults.WIDTH_ENFORCE.
         custom_width (int, optional): Defaults to StitchDefaults.CUSTOM_WIDTH.
         line_steps (int, optional): Defaults to StitchDefaults.LINE_STEPS.
@@ -156,7 +156,7 @@ def stitch(
     slice_points = detector.run(
         combined_img,
         split_height,
-        sensitivity=senstivity,
+        sensitivity=sensitivity,
         ignorable_pixels=ignorable_pixels,
         scan_step=line_steps,
     )

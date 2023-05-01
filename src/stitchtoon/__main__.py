@@ -102,7 +102,7 @@ def get_args():
     advanced.add_argument(
         "-e",
         "--sensitivity",
-        dest="senstivity",
+        dest="sensitivity",
         type=int,
         default=90,
         choices=range(0, 101),
@@ -145,7 +145,7 @@ def main():
 
     stitch_params = {
         "detection_type": kwargs.detection_type,
-        "senstivity": kwargs.senstivity,
+        "sensitivity": kwargs.sensitivity,
         "width_enforce": kwargs.width_enforcement,
         "custom_width": kwargs.size[1],
         "line_steps": kwargs.line_steps,

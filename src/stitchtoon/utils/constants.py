@@ -56,7 +56,7 @@ class ProcessDefaults:
 class StitchDefaults:
     INCREAMENT: int = 0
     DETECTION_TYPE: str = DETECTION_TYPE.NO_DETECTION.value
-    SENSTIVITY: int = 90
+    SENSITIVITY: int = 90
     WIDTH_ENFORCE: str = "none"
     CUSTOM_WIDTH: int = -1
     LINE_STEPS: int = 5
