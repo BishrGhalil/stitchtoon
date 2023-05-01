@@ -16,12 +16,6 @@
     <img src="https://img.shields.io/github/license/BishrGhalil/stitchtoon">
   </a>
   </div>
- 
-
-## New features
-- export as archive
-- better output naming handling
-- size limites for defferent output formats
 
 ## Install
 Via Pip
