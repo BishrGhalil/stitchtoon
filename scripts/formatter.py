@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 
 os.system("python -m black src --skip-string-normalization")
