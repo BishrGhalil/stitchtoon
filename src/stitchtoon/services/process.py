@@ -97,8 +97,15 @@ def process(
         )
         images_len = len(images)
         sub_output = output
+
         if recursive:
             sub_output = osp.join(output, osp.basename(image_dir.path))
+            if as_archive and osp.splitext(output)[1] != ".zip":
+                sub_output += ".zip"
+        else:
+            if as_archive and osp.splitext(output)[1] != ".zip":
+                sub_output = osp.join(output, f"{osp.basename(image_dir.path)}.zip")
+
 
         per_dir_percentage = PROGRESS_PERCENTAGE["save"] / working_dirs_len
         handler.save_all(
