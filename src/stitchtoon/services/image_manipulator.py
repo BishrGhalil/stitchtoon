@@ -27,7 +27,7 @@ class ImageManipulator:
 
         if enforce_setting == WIDTH_ENFORCEMENT.NONE.value and not custom_width:
             return img_objs
-        # Resizing Image Logic depending on enforcement settings
+
         new_img_width = 0
         if enforce_setting == WIDTH_ENFORCEMENT.AUTO.value:
             widths, heights = zip(*(img.size for img in img_objs))
@@ -48,7 +48,7 @@ class ImageManipulator:
     @logFunc(inclass=True)
     @staticmethod
     def combine(
-        img_objs: list[Image], progress: ProgressHandler = None, increament=0
+        img_objs: list[Image], progress: ProgressHandler = None, increament: int = 0
     ) -> Image:
         """Combines given image objs to a single vertically stacked single image obj.
 

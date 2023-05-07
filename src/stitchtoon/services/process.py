@@ -106,7 +106,6 @@ def process(
             if as_archive and osp.splitext(output)[1] != ".zip":
                 sub_output = osp.join(output, f"{osp.basename(image_dir.path)}.zip")
 
-
         per_dir_percentage = PROGRESS_PERCENTAGE["save"] / working_dirs_len
         handler.save_all(
             output=sub_output,

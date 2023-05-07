@@ -25,13 +25,22 @@ class ImageHandler:
 
         return filename
 
+    # TODOO: Load images from ao zip/cbz archive.
     @logFunc(inclass=True)
-    def load_zip(self, path):
+    def load_zip(
+        self,
+        path: os.PathLike,
+        progress: ProgressHandler = ProgressHandler(),
+        increament: int = 0,
+    ) -> list[Image]:
         pass
 
     @logFunc(inclass=True)
     def load(
-        self, images: list[Image], progress=ProgressHandler(), increament=0
+        self,
+        images: list[Image],
+        progress: ProgressHandler = ProgressHandler(),
+        increament: int = 0,
     ) -> list[Image]:
         """Loads all image files into a list of PIL image objects."""
         images_len = len(images)
@@ -54,7 +63,7 @@ class ImageHandler:
         quality=100,
         progress=ProgressHandler(),
         increament=0,
-    ):
+    ) -> os.PathLike:
         if img_format in PHOTOSHOP_FILE_TYPES:
             # FIXMEE: support archiving psd files
             raise Exception("Can't make PSD archive")
@@ -68,20 +77,21 @@ class ImageHandler:
             zf.writestr(self.filename_handler(f"{idx:02}", img_format), img_byte_arr)
             progress.update(progress.value + increament, f"Archive {idx}/{images_len}")
 
+        return output
+
+    @logFunc(inclass=True)
     def save_all(
         self,
-        output,
+        output: os.PathLike,
         images: list[Image],
         format: str = "png",
         as_archive: bool = False,
-        quality=100,
+        quality: int = 100,
         progress=ProgressHandler(),
-        increament=0,
-    ) -> str:
+        increament: int = 0,
+    ) -> os.PathLike:
+        progress.update(progress.value, "Saving, Please wait...")
         if as_archive:
-            if osp.splitext(output)[1] != ".zip":
-                output = osp.join(output, dt.now().strftime("%d%m%Y_%H%M%S.zip"))
-
             os.makedirs(osp.dirname(output), exist_ok=True)
             self.save_archive(output, images, format, quality, progress, increament)
         else:
