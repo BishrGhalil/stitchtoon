@@ -4,12 +4,21 @@ import sys
 
 from stitchtoon import __version__
 from stitchtoon.services.process import process
+from stitchtoon.services.global_logger import DEFAULT_LOG_LEVEL, get_logger, Logger
 
 
 def positive_int(value):
     if not value.isdigit() or int(value) <= 0:
         raise argparse.ArgumentTypeError("Not a valid integer value")
     return int(value)
+
+
+def log_level(value):
+    import logging
+
+    return {"debug": logging.DEBUG, "info": logging.INFO, "error": logging.ERROR}.get(
+        value, DEFAULT_LOG_LEVEL
+    )
 
 
 def size_format(value):
@@ -107,7 +116,7 @@ def get_args():
         default=90,
         choices=range(0, 101),
         metavar="[0-100]",
-        help="Sets the Object Detection Senstivity Percentage, Default=90 (10 percent tolerance)",
+        help="Sets the Object Detection sensitivity Percentage, Default=90 (10 percent tolerance)",
     )
     advanced.add_argument(
         "-q",
@@ -137,11 +146,31 @@ def get_args():
         metavar="[1-100]",
         help="Sets the value of Scan Line Step, Default=5 (5px)",
     )
+    general = parser.add_argument_group("General")
+    general.add_argument(
+        "--log-level",
+        dest="log_level",
+        default="error",
+        choices=["error", "debug", "info"],
+        help="Sets log level",
+    )
+    general.add_argument(
+        "--log-file",
+        dest="log_file",
+        default=sys.stdout,
+        help="Sets the log file, this supports providing datatime format.",
+    )
     return parser.parse_args()
 
 
 def main():
     kwargs = get_args()
+
+    global Logger
+    Logger = get_logger(
+        log_level=log_level(kwargs.log_level),
+        filename=kwargs.log_file,
+    )
 
     stitch_params = {
         "detection_type": kwargs.detection_type,
@@ -165,6 +194,7 @@ def main():
             params=stitch_params,
         )
     except Exception as e:
+        raise
         print(f"ERROR: {e}")
         return 1
 
