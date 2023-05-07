@@ -194,7 +194,6 @@ def main():
             params=stitch_params,
         )
     except Exception as e:
-        raise
         print(f"ERROR: {e}")
         return 1
 
