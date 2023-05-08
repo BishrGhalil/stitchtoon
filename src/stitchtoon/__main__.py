@@ -26,15 +26,18 @@ def size_format(value):
     size = value.split("X")
     if len(size) > 2:
         raise argparse.ArgumentTypeError(
-            "invalid size format. Supported formats `<height>X<width>` or `<height>`. ex: `5000X760`"
+            "invalid size format. Supported formats `<height>X<width>` or `<height>` or `x<width>`. ex: `5000X760`"
         )
 
-    if len(size) == 1:
+    elif len(size) == 1:
         size.append("0")
+    elif len(size) == 0:
+        return (-1, -1)
+
     for idx, s in enumerate(size):
         if not s.isdigit():
             raise argparse.ArgumentTypeError(
-                "invalid size format. Supported formats `<height>X<width>` or `<height>`. ex: `5000X760`"
+                "invalid size format. Supported formats `<height>X<width>` or `<height>` or `x<width>`. ex: `5000X760`"
             )
         else:
             size[idx] = int(s)
@@ -67,7 +70,17 @@ def get_args():
         "--size",
         dest="size",
         type=size_format,
-        required=True,
+        required="-n" not in sys.argv and "--images-number" not in sys.argv,
+        help="Sets the value of the Rough Panel Height And Width, hXw",
+        default=(-1, -1),
+    )
+    parser.add_argument(
+        "-n",
+        "--images-number",
+        dest="images_number",
+        type=positive_int,
+        default=0,
+        required="-s" not in sys.argv and "--size" not in sys.argv,
         help="Sets the value of the Rough Panel Height And Width, hXw",
     )
     parser.add_argument(
@@ -186,6 +199,7 @@ def main():
             input=kwargs.input,
             output=kwargs.output,
             split_height=kwargs.size[0],
+            images_number=kwargs.images_number,
             output_format=kwargs.output_format,
             recursive=kwargs.recursive,
             as_archive=kwargs.as_archive,

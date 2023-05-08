@@ -1,6 +1,7 @@
 from PIL import Image as pilImage
 
 from ..utils.constants import WIDTH_ENFORCEMENT
+from ..utils.errors import SizeLimitError
 from .global_logger import logFunc
 from .image_directory import Image
 from .progressbar import ProgressHandler
@@ -90,8 +91,11 @@ class ImageManipulator:
             img.pil.close()
             progress.update(progress.value + increament, f"Combined {idx}/{images_len}")
 
-        img = img_objs[0].copy()
+        img = Image(
+            path=img_objs[0].path, format=img_objs[0].format, name=img_objs[0].name
+        )
         img.pil = combined_img
+        progress.update(progress.value, "All combined")
         return img
 
     @logFunc(inclass=True)
@@ -113,7 +117,10 @@ class ImageManipulator:
             upper_limit = slice_locations[index - 1]
             lower_limit = slice_locations[index]
             slice_boundaries = (0, upper_limit, max_width, lower_limit)
-            img_slice = combined_img.pil.crop(slice_boundaries)
+            try:
+                img_slice = combined_img.pil.crop(slice_boundaries)
+            except ValueError:
+                raise SizeLimitError("Images to small to slice")
             img = combined_img.copy()
             img.pil = img_slice
             img_objs.append(img)

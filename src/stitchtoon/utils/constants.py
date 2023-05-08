@@ -4,6 +4,7 @@ from enum import Enum
 LOG_REL_DIR = "__logs__"
 SETTINGS_REL_DIR = "__settings__"
 OUTPUT_SUFFIX = "[stitched]"
+SMALLER_ALLOWD_HEIGHT = 10
 SUPPORTED_IMG_TYPES = (
     "png",
     "webp",

@@ -10,6 +10,7 @@ from stitchtoon.services import scan
 from stitchtoon.services.image_directory import Image
 from stitchtoon.services.progressbar import DefaultCliProgress
 from stitchtoon.services.progressbar import ProgressHandler
+from stitchtoon.utils.constants import DETECTION_TYPE
 from stitchtoon.utils.constants import FORMAT_NAME_MAPPER
 from stitchtoon.utils.constants import FORMAT_SIZE_MAPPER
 from stitchtoon.utils.constants import SIZE_LIMITS
@@ -31,8 +32,9 @@ PROGRESS_PERCENTAGE = {
 def process(
     input: PathLike,
     output: PathLike,
-    split_height: int,
     *,
+    split_height: int = 0,
+    images_number: int = 0,
     output_format: str = ProcessDefaults.OUTPUT_FORMAT,
     recursive: bool = ProcessDefaults.RECURSIVE,
     as_archive: bool = ProcessDefaults.AS_ARCHIVE,
@@ -63,6 +65,11 @@ def process(
     handler = ImageHandler()
     progress = progress or _get_progressbar(show_progress)
 
+    if not split_height and not images_number:
+        raise Exception(
+            "split_height and images_number are not provided, Must provide one of theme"
+        )
+
     format = _get_format_for_size(
         output_format, max(split_height, params.get("custom_width", 0))
     )
@@ -89,6 +96,13 @@ def process(
         )
         if not images:
             continue
+
+        total_images_length = sum(image.height for image in images)
+        if images_number:
+            split_height = total_images_length / images_number
+            format = _get_format_for_size(format, split_height)
+            params["detection_type"] = DETECTION_TYPE.NO_DETECTION.value
+
         per_dir_percentage = PROGRESS_PERCENTAGE["stitch"] / working_dirs_len
         images = stitch(
             images,
