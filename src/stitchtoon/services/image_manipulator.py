@@ -7,6 +7,19 @@ from .progressbar import ProgressHandler
 
 
 class ImageManipulator:
+    @logFunc
+    @staticmethod
+    def _resize_img(img: Image, new_img_width) -> Image:
+        if img.width == new_img_width:
+            return img
+        img_ratio = float(img.height / img.width)
+        new_img_height = int(img_ratio * new_img_width)
+        if new_img_height > 0:
+            img.pil = img.pil.resize(
+                (new_img_width, new_img_height), pilImage.Resampling.LANCZOS
+            )
+        return img
+
     @logFunc(inclass=True)
     @staticmethod
     def resize(
@@ -29,20 +42,22 @@ class ImageManipulator:
             return img_objs
 
         new_img_width = 0
-        if enforce_setting == WIDTH_ENFORCEMENT.AUTO.value:
+        if enforce_setting == WIDTH_ENFORCEMENT.COPYWRITE.value:
+            if len(img_objs) >= 2:
+                new_img_width = img_objs[1].width
+                ImageManipulator._resize_img(img_objs[0], new_img_width)
+            return img_objs
+
+        elif enforce_setting == WIDTH_ENFORCEMENT.AUTO.value:
             widths, heights = zip(*(img.size for img in img_objs))
             new_img_width = min(widths)
+
         elif enforce_setting == WIDTH_ENFORCEMENT.FIXED.value or custom_width:
             new_img_width = custom_width
+
         for img in img_objs:
-            if img.width == new_img_width:
-                continue
-            img_ratio = float(img.height / img.width)
-            new_img_height = int(img_ratio * new_img_width)
-            if new_img_height > 0:
-                img.pil = img.pil.resize(
-                    (new_img_width, new_img_height), pilImage.Resampling.LANCZOS
-                )
+            ImageManipulator._resize_img(img, new_img_width)
+
         return img_objs
 
     @logFunc(inclass=True)

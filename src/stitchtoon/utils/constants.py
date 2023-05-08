@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import Enum
 
 # Static Variables
 LOG_REL_DIR = "__logs__"
@@ -38,6 +38,7 @@ class WIDTH_ENFORCEMENT(Enum):
     NONE = "none"
     AUTO = "auto"
     FIXED = "fixed"
+    COPYWRITE = "copywrite"
 
 
 class DETECTION_TYPE(Enum):
