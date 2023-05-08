@@ -3,18 +3,20 @@ import os.path as osp
 from os import PathLike
 
 from stitchtoon.detectors import select_detector
-from stitchtoon.services import ImageHandler, ImageManipulator, logFunc, scan
+from stitchtoon.services import ImageHandler
+from stitchtoon.services import ImageManipulator
+from stitchtoon.services import logFunc
+from stitchtoon.services import scan
 from stitchtoon.services.image_directory import Image
-from stitchtoon.services.progressbar import DefaultCliProgress, ProgressHandler
-from stitchtoon.utils.constants import (
-    FORMAT_NAME_MAPPER,
-    FORMAT_SIZE_MAPPER,
-    SIZE_LIMITS,
-    WIDTH_ENFORCEMENT,
-    ProcessDefaults,
-    StitchDefaults,
-)
-from stitchtoon.utils.errors import EmptyImageDir, SizeLimitError
+from stitchtoon.services.progressbar import DefaultCliProgress
+from stitchtoon.services.progressbar import ProgressHandler
+from stitchtoon.utils.constants import FORMAT_NAME_MAPPER
+from stitchtoon.utils.constants import FORMAT_SIZE_MAPPER
+from stitchtoon.utils.constants import SIZE_LIMITS
+from stitchtoon.utils.constants import ProcessDefaults
+from stitchtoon.utils.constants import StitchDefaults
+from stitchtoon.utils.errors import EmptyImageDir
+from stitchtoon.utils.errors import SizeLimitError
 
 # Must have a sum of 100
 PROGRESS_PERCENTAGE = {

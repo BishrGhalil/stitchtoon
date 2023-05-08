@@ -1,5 +1,3 @@
-from PIL import Image as pilImage
-
 from ..services.global_logger import logFunc
 from ..services.image_directory import Image
 

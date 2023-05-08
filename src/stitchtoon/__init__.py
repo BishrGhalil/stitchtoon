@@ -3,7 +3,6 @@
 """Stitch Toon"""
 
 import os
-import sys
 from sys import version_info
 
 
@@ -46,10 +45,15 @@ PY3 = version_info[0] >= 3
 
 args = None
 
-from .services.image_directory import Image, ImageDirectory
-from .services.process import process, stitch
+from .services.image_directory import Image
+from .services.image_directory import ImageDirectory
+from .services.process import process
+from .services.process import stitch
 from .services.progressbar import ProgressHandler
-from .services.scanner import is_supported_img, scan, scanimgdir, walkimgdir
+from .services.scanner import is_supported_img
+from .services.scanner import scan
+from .services.scanner import scanimgdir
+from .services.scanner import walkimgdir
 
 __all__ = [
     Image,

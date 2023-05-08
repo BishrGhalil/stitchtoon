@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import os
 import os.path as osp
-from typing import Callable, Iterable, Union
+from typing import Iterable
 
 from natsort import natsorted
 
-from ..utils.constants import PHOTOSHOP_FILE_TYPES, SUPPORTED_IMG_TYPES
+from ..utils.constants import SUPPORTED_IMG_TYPES
 from .global_logger import logFunc
-from .image_directory import Image, ImageDirectory
+from .image_directory import Image
+from .image_directory import ImageDirectory
 
 
 @logFunc()

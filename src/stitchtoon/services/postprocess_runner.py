@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 from ..services.global_logger import logFunc

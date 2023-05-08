@@ -4,7 +4,6 @@ import io
 import os
 import os.path as osp
 import zipfile
-from datetime import datetime as dt
 
 from PIL import Image as pilImage
 from psd_tools import PSDImage

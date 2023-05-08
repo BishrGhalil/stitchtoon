@@ -1,9 +1,9 @@
 import argparse
-import math
 import sys
 
 from stitchtoon import __version__
-from stitchtoon.services.global_logger import DEFAULT_LOG_LEVEL, Logger, get_logger
+from stitchtoon.services.global_logger import DEFAULT_LOG_LEVEL
+from stitchtoon.services.global_logger import get_logger
 from stitchtoon.services.process import process
 
 
