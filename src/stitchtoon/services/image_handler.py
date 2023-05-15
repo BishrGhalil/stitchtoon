@@ -24,7 +24,7 @@ class ImageHandler:
 
         return filename
 
-    # TODOO: Load images from ao zip/cbz archive.
+    # TODOO: Load images from a zip/cbz archive.
     @logFunc(inclass=True)
     def load_zip(
         self,
