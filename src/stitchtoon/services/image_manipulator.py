@@ -116,6 +116,8 @@ class ImageManipulator:
         for index in range(1, len(slice_locations)):
             upper_limit = slice_locations[index - 1]
             lower_limit = slice_locations[index]
+            if lower_limit < upper_limit:
+                continue
             slice_boundaries = (0, upper_limit, max_width, lower_limit)
             try:
                 img_slice = combined_img.pil.crop(slice_boundaries)
