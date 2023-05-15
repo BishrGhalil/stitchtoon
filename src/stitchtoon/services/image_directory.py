@@ -8,7 +8,7 @@ from PIL import Image as pilImage
 from psd_tools import PSDImage
 
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
-from ..utils.errors import ImageNotOpenedError
+from ..utils.constants import SUPPORTS_TRANSPARENCY
 
 
 @dataclass
@@ -20,7 +20,7 @@ class Image:
 
     def save(self, fp: os.PathLike, format: str = None, quality: int = 90) -> None:
         if not self.pil:
-            return
+            self._raise_if_not_opened()
         if not format:
             format = self.format
 
@@ -29,6 +29,14 @@ class Image:
             psd_obj.save(fp)
             del psd_obj
         else:
+            if self.pil.mode == "RGBA" and format.lower() not in SUPPORTS_TRANSPARENCY:
+                self.pil.load()
+                background = pilImage.new("RGB", self.size, (255, 255, 255))
+                background.paste(
+                    self.pil, mask=self.pil.split()[3]
+                )  # 3 is the alpha channel
+                self.pil = background
+
             self.pil.save(fp, format=format, quality=quality)
             self.pil.close()
 
@@ -64,7 +72,7 @@ class Image:
 
     def _raise_if_not_opened(self) -> None:
         if not self.pil:
-            raise ImageNotOpenedError("Image is not opened yet")
+            raise Exception("Image should be opened first")
 
 
 @dataclass

@@ -82,7 +82,7 @@ class ImageManipulator:
         widths, heights = zip(*(img.size for img in img_objs))
         combined_img_width = max(widths)
         combined_img_height = sum(heights)
-        combined_img = pilImage.new("RGB", (combined_img_width, combined_img_height))
+        combined_img = pilImage.new("RGBA", (combined_img_width, combined_img_height))
         combine_offset = 0
         images_len = len(img_objs)
         for idx, img in enumerate(img_objs, 1):

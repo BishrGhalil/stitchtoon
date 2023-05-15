@@ -40,6 +40,7 @@ class ImageHandler:
         images: list[Image],
         progress: ProgressHandler = ProgressHandler(),
         increament: int = 0,
+        transparent: bool = False,
     ) -> list[Image]:
         """Loads all image files into a list of PIL image objects."""
         images_len = len(images)
@@ -71,7 +72,7 @@ class ImageHandler:
         images_len = len(images)
         for idx, image in enumerate(images, 1):
             img_byte_arr = io.BytesIO()
-            image.pil.save(img_byte_arr, img_format, quality=quality)
+            image.save(img_byte_arr, img_format, quality=quality)
             img_byte_arr = img_byte_arr.getvalue()
             zf.writestr(self.filename_handler(f"{idx:02}", img_format), img_byte_arr)
             progress.update(progress.value + increament, f"Archive {idx}/{images_len}")

@@ -14,6 +14,7 @@ from stitchtoon.utils.constants import DETECTION_TYPE
 from stitchtoon.utils.constants import FORMAT_NAME_MAPPER
 from stitchtoon.utils.constants import FORMAT_SIZE_MAPPER
 from stitchtoon.utils.constants import SIZE_LIMITS
+from stitchtoon.utils.constants import SUPPORTS_TRANSPARENCY
 from stitchtoon.utils.constants import ProcessDefaults
 from stitchtoon.utils.constants import StitchDefaults
 from stitchtoon.utils.errors import EmptyImageDir
@@ -89,10 +90,12 @@ def process(
     for image_dir in working_dirs:
         images_len = len(image_dir.images)
         per_dir_percentage = PROGRESS_PERCENTAGE["loading"] / working_dirs_len
+        transparent = format in SUPPORTS_TRANSPARENCY
         images = handler.load(
             image_dir.images,
             progress=progress,
             increament=per_dir_percentage / images_len,
+            transparent=transparent,
         )
         if not images:
             continue
