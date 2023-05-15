@@ -32,7 +32,7 @@ SIZE_LIMITS = {
 }
 
 PHOTOSHOP_FILE_TYPES = ("psd", "psb")
-SUPPORTS_TRANSPARENCY = ("png", "psd", "psb")
+SUPPORTS_TRANSPARENCY = ("png", "webp", "psd", "psb")
 
 
 # Static Enums
