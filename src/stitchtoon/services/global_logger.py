@@ -15,6 +15,7 @@ def get_logger(log_level=logging.ERROR, filename=sys.stdout):
         current_date = datetime.now()
         filename = current_date.strftime(filename)
         handler = logging.FileHandler(filename, mode="w")
+        handler.setFormatter(logging.Formatter(log_format))
         logger.addHandler(handler)
 
     logger.debug("Logger Initialized")
