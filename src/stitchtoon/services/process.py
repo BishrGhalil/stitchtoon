@@ -93,7 +93,7 @@ def process(
     working_dirs = scan(input, recursive)
     if not working_dirs:
         raise EmptyImageDir(
-            "Input directory does not contain supported images. Try again with batch mode."
+            "Didn't find any supported images. Try again with batch mode."
         )
 
     progress.update(progress.value + PROGRESS_PERCENTAGE["scan"], "Stitching")
