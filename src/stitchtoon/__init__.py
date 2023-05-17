@@ -31,7 +31,7 @@ def version_helper():
 
 # Information
 __license__ = "MIT"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __release__ = False
 __author__ = __maintainer__ = "Beshr Ghalil"
 __email__ = "beshrghalil@porotonmail.com"

@@ -18,6 +18,7 @@ from stitchtoon.utils.constants import FORMAT_SIZE_MAPPER
 from stitchtoon.utils.constants import METADATA_FILENAME
 from stitchtoon.utils.constants import SIZE_LIMITS
 from stitchtoon.utils.constants import SUPPORTS_TRANSPARENCY
+from stitchtoon.utils.constants import WIDTH_ENFORCEMENT
 from stitchtoon.utils.constants import ProcessDefaults
 from stitchtoon.utils.constants import StitchDefaults
 from stitchtoon.utils.errors import EmptyImageDir
@@ -137,13 +138,17 @@ def process(
         for idx, image in enumerate(images):
             metadata["imgs"].append([image.width, image.height])
         total_images_length = sum(image.height for image in images)
-        if images_number:
+        if images_number and not using_metadata:
             split_height = total_images_length / images_number
             format = _get_format_for_size(format, split_height)
             params["detection_type"] = DETECTION_TYPE.NO_DETECTION.value
 
         if using_metadata:
             params["detection_type"] = DETECTION_TYPE.METADATA.value
+            params["custom_width"] = -1
+            params["width_enforce"] = WIDTH_ENFORCEMENT.NONE.value
+        if write_metadata:
+            params["width_enforce"] = WIDTH_ENFORCEMENT.NONE.value
 
         per_dir_percentage = PROGRESS_PERCENTAGE["stitch"] / working_dirs_len
         images = stitch(
