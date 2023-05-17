@@ -3,6 +3,9 @@
   <p>
     A powerful package for stitching and cutting webtoons/manhwa/manhua raws.
   </p>
+  <p>
+    A GUI version is available at <a href="https://github.com/BishrGhalil/stitchtoon-gui"><b>Stitchtoon GUI</b></a>
+  </p>
   <a href="https://github.com/BishrGhalil/stitchtoon/releases/latest">
     <img src="https://img.shields.io/github/v/release/BishrGhalil/stitchtoon">
   </a>
