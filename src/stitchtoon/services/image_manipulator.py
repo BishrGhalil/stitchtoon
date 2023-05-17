@@ -100,7 +100,12 @@ class ImageManipulator:
 
     @logFunc(inclass=True)
     @staticmethod
-    def slice(combined_img: Image, slice_locations: list[int], progress: ProgressHandler = None, increment: int = 0) -> list[Image]:
+    def slice(
+        combined_img: Image,
+        slice_locations: list[int],
+        progress: ProgressHandler = None,
+        increment: int = 0,
+    ) -> list[Image]:
         """Combines given combined img to into multiple img slices given the slice locations.
 
         Args:
@@ -129,7 +134,9 @@ class ImageManipulator:
                 bbox = img_slice.getbbox()
                 if bbox:
                     img_slice = img_slice.crop(bbox)
-                progress.update(progress.value + increment, f"sliced {index}/{total_slices}")
+                progress.update(
+                    progress.value + increment, f"sliced {index}/{total_slices}"
+                )
             except ValueError:
                 raise SizeLimitError("Images to small to slice")
             img = combined_img.copy()

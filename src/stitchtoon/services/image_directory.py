@@ -86,6 +86,6 @@ class ImageDirectory:
 
     def __repr__(self):
         return self.path
-    
+
     def __hash__(self):
         return hash(repr(self))

@@ -1,8 +1,8 @@
 import gc
+import json
 import os
 import os.path as osp
 from os import PathLike
-import json
 
 from stitchtoon.detectors import select_detector
 from stitchtoon.services import ImageHandler
@@ -15,14 +15,14 @@ from stitchtoon.services.progressbar import ProgressHandler
 from stitchtoon.utils.constants import DETECTION_TYPE
 from stitchtoon.utils.constants import FORMAT_NAME_MAPPER
 from stitchtoon.utils.constants import FORMAT_SIZE_MAPPER
+from stitchtoon.utils.constants import METADATA_FILENAME
 from stitchtoon.utils.constants import SIZE_LIMITS
 from stitchtoon.utils.constants import SUPPORTS_TRANSPARENCY
 from stitchtoon.utils.constants import ProcessDefaults
 from stitchtoon.utils.constants import StitchDefaults
-from stitchtoon.utils.constants import METADATA_FILENAME
 from stitchtoon.utils.errors import EmptyImageDir
-from stitchtoon.utils.errors import SizeLimitError
 from stitchtoon.utils.errors import NoMetadataError
+from stitchtoon.utils.errors import SizeLimitError
 
 # Must have a sum of 100
 PROGRESS_PERCENTAGE = {
@@ -33,6 +33,7 @@ PROGRESS_PERCENTAGE = {
 }
 
 Metadata = dict[str, list[dict[str, list[int, int]]]]
+
 
 @logFunc()
 def process(
@@ -107,9 +108,10 @@ def process(
                     prev_metadata = json.load(fd)
             else:
                 if not split_height and not images_number:
-                    raise NoMetadataError("metadata file does not exists, try stitching source again with write_metadata option, Or provide split_height or images_number")
+                    raise NoMetadataError(
+                        "metadata file does not exists, try stitching source again with write_metadata option, Or provide split_height or images_number"
+                    )
                     return None
-
 
         images_len = len(image_dir.images)
         per_dir_percentage = PROGRESS_PERCENTAGE["loading"] / working_dirs_len
@@ -149,7 +151,7 @@ def process(
             split_height,
             progress=progress,
             increment=per_dir_percentage / images_len,
-            metadata = prev_metadata.get("imgs"),
+            metadata=prev_metadata.get("imgs"),
             **params,
         )
         images_len = len(images)
@@ -215,7 +217,7 @@ def stitch(
     progress.update(progress.value, "Calculating slicing points")
     detector = select_detector(detection_type=detection_type)
     slice_points = detector.run(
-        combined_img = combined_img,
+        combined_img=combined_img,
         split_height=split_height,
         sensitivity=sensitivity,
         ignorable_pixels=ignorable_pixels,

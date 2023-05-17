@@ -70,7 +70,9 @@ def get_args():
         "--size",
         dest="size",
         type=size_format,
-        required="-n" not in sys.argv and "--images-number" not in sys.argv and "--slice-to-metadata" not in sys.argv,
+        required="-n" not in sys.argv
+        and "--images-number" not in sys.argv
+        and "--slice-to-metadata" not in sys.argv,
         help="Sets the value of the Rough Panel Height And Width, hXw",
         default=(0, 0),
     )
@@ -80,7 +82,9 @@ def get_args():
         dest="images_number",
         type=positive_int,
         default=0,
-        required="-s" not in sys.argv and "--size" not in sys.argv and "--slice-to-metadata" not in sys.argv,
+        required="-s" not in sys.argv
+        and "--size" not in sys.argv
+        and "--slice-to-metadata" not in sys.argv,
         help="Sets the value of the Rough Panel Height And Width, hXw",
     )
     parser.add_argument(
@@ -143,7 +147,7 @@ def get_args():
     )
     advanced.add_argument(
         "-g",
-        "--ingorable_pixels",
+        "--ignorable_pixels",
         dest="ignorable_pixels",
         type=positive_int,
         default=5,
@@ -159,8 +163,18 @@ def get_args():
         metavar="[1-100]",
         help="Sets the value of Scan Line Step, Default=5 (5px)",
     )
-    advanced.add_argument("--write-metadata", help="Writes metadata file, Used to save current images sizes so you can slice to the same sizes when stitching again.", action="store_true", default=False)
-    advanced.add_argument("--slice-to-metadata", help="Reads metadata file if available, If not available slices according to split_height and images_number options.", action="store_true", default=True)
+    advanced.add_argument(
+        "--write-metadata",
+        help="Writes metadata file, Used to save current images sizes so you can slice to the same sizes when stitching again.",
+        action="store_true",
+        default=False,
+    )
+    advanced.add_argument(
+        "--slice-to-metadata",
+        help="Reads metadata file if available, If not available slices according to split_height and images_number options.",
+        action="store_true",
+        default=True,
+    )
     general = parser.add_argument_group("General")
     general.add_argument(
         "--log-level",

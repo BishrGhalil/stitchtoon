@@ -2,6 +2,7 @@ from ..services.global_logger import logFunc
 from ..services.image_directory import Image
 from ..utils.errors import NoMetadataError
 
+
 class MetadataSlicingDetector:
     @logFunc(inclass=True)
     def run(self, combined_img: Image, **kwargs) -> list[int]:
