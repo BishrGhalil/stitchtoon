@@ -21,7 +21,7 @@
   </div>
 
 ## Install
-Via Pip
+Install with pip
 ```
 pip install stitchtoon
 ```
