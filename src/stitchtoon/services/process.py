@@ -94,8 +94,7 @@ def process(
             "Input directory does not contain supported images. Try again with batch mode."
         )
 
-    # Fixme: typo in Stiching
-    progress.update(progress.value + PROGRESS_PERCENTAGE["scan"], "Stichting")
+    progress.update(progress.value + PROGRESS_PERCENTAGE["scan"], "Stitching")
     working_dirs_len = len(working_dirs)
     for image_dir in working_dirs:
         metadata = {"imgs": []}
@@ -118,7 +117,7 @@ def process(
         images = handler.load(
             image_dir.images,
             progress=progress,
-            increament=per_dir_percentage / images_len,
+            increment=per_dir_percentage / images_len,
             transparent=transparent,
         )
         if not images:
@@ -149,7 +148,7 @@ def process(
             images,
             split_height,
             progress=progress,
-            increament=per_dir_percentage / images_len,
+            increment=per_dir_percentage / images_len,
             metadata = prev_metadata.get("imgs"),
             **params,
         )
@@ -162,7 +161,7 @@ def process(
             as_archive=as_archive,
             quality=lossy_quality,
             progress=progress,
-            increament=per_dir_percentage / images_len,
+            increment=per_dir_percentage / images_len,
         )
         if write_metadata:
             progress.update(progress.value, "Writing metadata file")
@@ -180,7 +179,7 @@ def stitch(
     split_height: int,
     *,
     progress: ProgressHandler = None,
-    increament: int = StitchDefaults.INCREAMENT,
+    increment: int = StitchDefaults.increment,
     detection_type: str = StitchDefaults.DETECTION_TYPE,
     sensitivity: int = StitchDefaults.SENSITIVITY,
     width_enforce: str = StitchDefaults.WIDTH_ENFORCE,
@@ -195,7 +194,7 @@ def stitch(
         images (list[Image])
         split_height (int)
         progress (ProgressHandler, optional): progressbar handler. Defaults to None.
-        increament (int, optional): progressbar increament factor. Defaults to StitchDefaults.INCREAMENT.
+        increment (int, optional): progressbar increment factor. Defaults to StitchDefaults.increment.
         detection_type (str, optional): Defaults to StitchDefaults.DETECTION_TYPE.
         sensitivity (int, optional): Defaults to StitchDefaults.SENSITIVITY.
         width_enforce (str, optional): Defaults to StitchDefaults.WIDTH_ENFORCE.
@@ -211,7 +210,7 @@ def stitch(
         progress = _get_progressbar()
     images = ImageManipulator.resize(images, width_enforce, custom_width)
     combined_img = ImageManipulator.combine(
-        images, progress=progress, increament=increament
+        images, progress=progress, increment=increment
     )
     progress.update(progress.value, "Calculating slicing points")
     detector = select_detector(detection_type=detection_type)
@@ -228,9 +227,8 @@ def stitch(
     return images
 
 
-# Fixme: typo excedes
 def _is_size_ok(format: str, size: int) -> bool:
-    """Checks if size excedes format size limit
+    """Checks if size exceeds format size limit
 
     Args:
         format (str)
@@ -246,7 +244,6 @@ def _is_size_ok(format: str, size: int) -> bool:
     return True
 
 
-# Fixme: fix typo Whene
 def _get_format_for_size(format: str, size: int) -> str:
     """Gets the right format alternative for current size or raise
 
@@ -255,7 +252,7 @@ def _get_format_for_size(format: str, size: int) -> str:
         size (int)
 
     Raises:
-        SizeLimitError: Whene size is bigger than format size limit
+        SizeLimitError: When size is bigger than format size limit
 
     Returns:
         str: format

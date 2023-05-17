@@ -64,20 +64,18 @@ class ImageManipulator:
     @logFunc(inclass=True)
     @staticmethod
     def combine(
-        img_objs: list[Image], progress: ProgressHandler = None, increament: int = 0
+        img_objs: list[Image], progress: ProgressHandler = None, increment: int = 0
     ) -> Image:
         """Combines given image objs to a single vertically stacked single image obj.
 
         Args:
             img_objs (list[Image])
             progress (_type_, optional)
-            increament (int, optional). Defaults to 0.
+            increment (int, optional). Defaults to 0.
 
         Returns:
             Image
         """
-
-        # Fixme: increament is a typo
 
         if not progress:
             progress = ProgressHandler()
@@ -91,7 +89,7 @@ class ImageManipulator:
             combined_img.paste(img.pil, (0, combine_offset))
             combine_offset += img.height
             img.pil.close()
-            progress.update(progress.value + increament, f"Combined {idx}/{images_len}")
+            progress.update(progress.value + increment, f"Combined {idx}/{images_len}")
 
         img = Image(
             path=img_objs[0].path, format=img_objs[0].format, name=img_objs[0].name
@@ -102,7 +100,7 @@ class ImageManipulator:
 
     @logFunc(inclass=True)
     @staticmethod
-    def slice(combined_img: Image, slice_locations: list[int], progress: ProgressHandler = None, increament: int = 0) -> list[Image]:
+    def slice(combined_img: Image, slice_locations: list[int], progress: ProgressHandler = None, increment: int = 0) -> list[Image]:
         """Combines given combined img to into multiple img slices given the slice locations.
 
         Args:
@@ -131,7 +129,7 @@ class ImageManipulator:
                 bbox = img_slice.getbbox()
                 if bbox:
                     img_slice = img_slice.crop(bbox)
-                progress.update(progress.value + increament, f"sliced {index}/{total_slices}")
+                progress.update(progress.value + increment, f"sliced {index}/{total_slices}")
             except ValueError:
                 raise SizeLimitError("Images to small to slice")
             img = combined_img.copy()

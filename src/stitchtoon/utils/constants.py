@@ -4,7 +4,7 @@ from enum import Enum
 LOG_REL_DIR = "__logs__"
 SETTINGS_REL_DIR = "__settings__"
 OUTPUT_SUFFIX = "[stitched]"
-SMALLER_ALLOWD_HEIGHT = 10
+SMALLER_ALLOWED_HEIGHT = 10
 METADATA_FILENAME = ".stitching_metadata.json"
 SUPPORTED_IMG_TYPES = (
     "png",
@@ -59,7 +59,7 @@ class ProcessDefaults:
 
 
 class StitchDefaults:
-    INCREAMENT: int = 0
+    increment: int = 0
     DETECTION_TYPE: str = DETECTION_TYPE.NO_DETECTION.value
     SENSITIVITY: int = 90
     WIDTH_ENFORCE: str = "none"

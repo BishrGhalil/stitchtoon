@@ -30,7 +30,7 @@ class ImageHandler:
         self,
         path: os.PathLike,
         progress: ProgressHandler = ProgressHandler(),
-        increament: int = 0,
+        increment: int = 0,
     ) -> list[Image]:
         pass
 
@@ -39,7 +39,7 @@ class ImageHandler:
         self,
         images: list[Image],
         progress: ProgressHandler = ProgressHandler(),
-        increament: int = 0,
+        increment: int = 0,
         transparent: bool = False,
     ) -> list[Image]:
         """Loads all image files into a list of PIL image objects."""
@@ -51,7 +51,7 @@ class ImageHandler:
                 psd = PSDImage.open(image.path)
                 image.pil = psd.topil()
                 del psd
-            progress.update(progress.value + increament, f"Loading {idx}/{images_len}")
+            progress.update(progress.value + increment, f"Loading {idx}/{images_len}")
         return images
 
     @logFunc(inclass=True)
@@ -62,7 +62,7 @@ class ImageHandler:
         img_format: str,
         quality=100,
         progress=ProgressHandler(),
-        increament=0,
+        increment=0,
     ) -> os.PathLike:
         if img_format in PHOTOSHOP_FILE_TYPES:
             # FIXMEE: support archiving psd files
@@ -75,7 +75,7 @@ class ImageHandler:
             image.save(img_byte_arr, img_format, quality=quality)
             img_byte_arr = img_byte_arr.getvalue()
             zf.writestr(self.filename_handler(f"{idx:02}", img_format), img_byte_arr)
-            progress.update(progress.value + increament, f"Archive {idx}/{images_len}")
+            progress.update(progress.value + increment, f"Archive {idx}/{images_len}")
 
         return output
 
@@ -88,12 +88,12 @@ class ImageHandler:
         as_archive: bool = False,
         quality: int = 100,
         progress=ProgressHandler(),
-        increament: int = 0,
+        increment: int = 0,
     ) -> os.PathLike:
         progress.update(progress.value, "Saving, Please wait...")
         if as_archive:
             os.makedirs(osp.dirname(output), exist_ok=True)
-            self.save_archive(output, images, format, quality, progress, increament)
+            self.save_archive(output, images, format, quality, progress, increment)
         else:
             os.makedirs(output, exist_ok=True)
             images_len = len(images)
@@ -101,6 +101,6 @@ class ImageHandler:
                 filename = self.filename_handler(f"{idx:02}", format)
                 img.save(osp.join(output, filename), format, quality)
                 progress.update(
-                    progress.value + increament, f"Saving {idx}/{images_len}"
+                    progress.value + increment, f"Saving {idx}/{images_len}"
                 )
         return output
