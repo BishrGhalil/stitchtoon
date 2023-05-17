@@ -80,3 +80,12 @@ class ImageDirectory:
     path: os.PathLike
     images: list[Image]
     dirs: list[ImageDirectory] = field(default=None)
+
+    def __str__(self):
+        return self.path
+
+    def __repr__(self):
+        return self.path
+    
+    def __hash__(self):
+        return hash(repr(self))

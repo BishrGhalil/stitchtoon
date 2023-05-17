@@ -7,9 +7,11 @@ from ..utils.constants import SMALLER_ALLOWD_HEIGHT
 
 class PixelComparisonDetector:
     @logFunc(inclass=True)
-    def run(self, combined_img: Image, split_height: int, **kwargs) -> list[int]:
+    def run(self, combined_img: Image, **kwargs) -> list[int]:
         """Uses Neighbouring pixels comparison to detect ideal slice locations"""
-        if split_height < SMALLER_ALLOWD_HEIGHT:
+        split_height = kwargs.get("split_height")
+        # Fixme: typo in ALLOWD should be ALLOWED
+        if not split_height or split_height < SMALLER_ALLOWD_HEIGHT:
             raise Exception("Height very small to slice")
         # Changes from a pil Image to an numpy pixel array
         combined_img = np.array(combined_img.pil.convert("L"))

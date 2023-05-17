@@ -5,6 +5,7 @@ LOG_REL_DIR = "__logs__"
 SETTINGS_REL_DIR = "__settings__"
 OUTPUT_SUFFIX = "[stitched]"
 SMALLER_ALLOWD_HEIGHT = 10
+METADATA_FILENAME = ".stitching_metadata.json"
 SUPPORTED_IMG_TYPES = (
     "png",
     "webp",
@@ -46,6 +47,7 @@ class WIDTH_ENFORCEMENT(Enum):
 class DETECTION_TYPE(Enum):
     NO_DETECTION = "none"
     PIXEL_COMPARISON = "pixel"
+    METADATA = "metadata"
 
 
 class ProcessDefaults:

@@ -77,6 +77,8 @@ class ImageManipulator:
             Image
         """
 
+        # Fixme: increament is a typo
+
         if not progress:
             progress = ProgressHandler()
         widths, heights = zip(*(img.size for img in img_objs))
@@ -100,7 +102,7 @@ class ImageManipulator:
 
     @logFunc(inclass=True)
     @staticmethod
-    def slice(combined_img: Image, slice_locations: list[int]) -> list[Image]:
+    def slice(combined_img: Image, slice_locations: list[int], progress: ProgressHandler = None, increament: int = 0) -> list[Image]:
         """Combines given combined img to into multiple img slices given the slice locations.
 
         Args:
@@ -111,20 +113,30 @@ class ImageManipulator:
             list[Image]
         """
 
+        if not progress:
+            progress = ProgressHandler()
+
         max_width = combined_img.width
+        min_width = 0
         img_objs = []
-        for index in range(1, len(slice_locations)):
+        total_slices = len(slice_locations)
+        for index in range(1, total_slices):
             upper_limit = slice_locations[index - 1]
             lower_limit = slice_locations[index]
             if lower_limit < upper_limit:
                 continue
-            slice_boundaries = (0, upper_limit, max_width, lower_limit)
+            slice_boundaries = (min_width, upper_limit, max_width, lower_limit)
             try:
                 img_slice = combined_img.pil.crop(slice_boundaries)
+                bbox = img_slice.getbbox()
+                if bbox:
+                    img_slice = img_slice.crop(bbox)
+                progress.update(progress.value + increament, f"sliced {index}/{total_slices}")
             except ValueError:
                 raise SizeLimitError("Images to small to slice")
             img = combined_img.copy()
             img.pil = img_slice
             img_objs.append(img)
         combined_img.pil.close()
+        progress.update(progress.value, "All sliced")
         return img_objs

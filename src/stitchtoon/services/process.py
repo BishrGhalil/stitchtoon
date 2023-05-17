@@ -1,6 +1,8 @@
 import gc
+import os
 import os.path as osp
 from os import PathLike
+import json
 
 from stitchtoon.detectors import select_detector
 from stitchtoon.services import ImageHandler
@@ -17,17 +19,20 @@ from stitchtoon.utils.constants import SIZE_LIMITS
 from stitchtoon.utils.constants import SUPPORTS_TRANSPARENCY
 from stitchtoon.utils.constants import ProcessDefaults
 from stitchtoon.utils.constants import StitchDefaults
+from stitchtoon.utils.constants import METADATA_FILENAME
 from stitchtoon.utils.errors import EmptyImageDir
 from stitchtoon.utils.errors import SizeLimitError
+from stitchtoon.utils.errors import NoMetadataError
 
 # Must have a sum of 100
 PROGRESS_PERCENTAGE = {
     "scan": 10,
-    "stitch": 70,
+    "stitch": 60,
     "loading": 10,
-    "save": 10,
+    "save": 20,
 }
 
+Metadata = dict[str, list[dict[str, list[int, int]]]]
 
 @logFunc()
 def process(
@@ -43,6 +48,8 @@ def process(
     show_progress: bool = ProcessDefaults.SHOW_PROGRESS,
     progress: ProgressHandler = None,
     params: dict[str, any],
+    write_metadata: bool = False,
+    slice_to_metadata: bool = True,
 ) -> None:
     """stitch images in input and save them to output
 
@@ -57,6 +64,8 @@ def process(
         lossy_quality (int, optional): Defaults to ProcessDefaults.LOSSY_QUALITY.
         show_progress (bool, optional): Defaults to ProcessDefaults.SHOW_PROGRESS.
         progress (ProgressHandler, optional): progressbar handler. Defaults to None.
+        write_metadata (bool, optional): Writes metadata file so you can match source when stitching again, Defaults to False.
+        slice_to_metadata (bool, optional): Slice according to metadata file if not available slice to split_height or images_number, Defaults to True.
 
     Raises:
         FileNotFoundError: When input directory could not be found
@@ -66,9 +75,9 @@ def process(
     handler = ImageHandler()
     progress = progress or _get_progressbar(show_progress)
 
-    if not split_height and not images_number:
+    if not split_height and not images_number and not slice_to_metadata:
         raise Exception(
-            "split_height and images_number are not provided, Must provide one of theme"
+            "split_height ,images_number and slice_to_metadata are not provided, Must provide one of theme"
         )
 
     format = _get_format_for_size(
@@ -85,9 +94,24 @@ def process(
             "Input directory does not contain supported images. Try again with batch mode."
         )
 
+    # Fixme: typo in Stiching
     progress.update(progress.value + PROGRESS_PERCENTAGE["scan"], "Stichting")
     working_dirs_len = len(working_dirs)
     for image_dir in working_dirs:
+        metadata = {"imgs": []}
+        prev_metadata = {}
+        using_metadata = False
+        if slice_to_metadata:
+            if METADATA_FILENAME in os.listdir(input):
+                using_metadata = True
+                with open(osp.join(image_dir.path, METADATA_FILENAME), "r") as fd:
+                    prev_metadata = json.load(fd)
+            else:
+                if not split_height and not images_number:
+                    raise NoMetadataError("metadata file does not exists, try stitching source again with write_metadata option, Or provide split_height or images_number")
+                    return None
+
+
         images_len = len(image_dir.images)
         per_dir_percentage = PROGRESS_PERCENTAGE["loading"] / working_dirs_len
         transparent = format in SUPPORTS_TRANSPARENCY
@@ -100,23 +124,7 @@ def process(
         if not images:
             continue
 
-        total_images_length = sum(image.height for image in images)
-        if images_number:
-            split_height = total_images_length / images_number
-            format = _get_format_for_size(format, split_height)
-            params["detection_type"] = DETECTION_TYPE.NO_DETECTION.value
-
-        per_dir_percentage = PROGRESS_PERCENTAGE["stitch"] / working_dirs_len
-        images = stitch(
-            images,
-            split_height,
-            progress=progress,
-            increament=per_dir_percentage / images_len,
-            **params,
-        )
-        images_len = len(images)
         sub_output = output
-
         if recursive:
             sub_output = osp.join(output, osp.basename(image_dir.path))
             if as_archive and osp.splitext(output)[1] != ".zip":
@@ -125,6 +133,27 @@ def process(
             if as_archive and osp.splitext(output)[1] != ".zip":
                 sub_output = osp.join(output, f"{osp.basename(image_dir.path)}.zip")
 
+        for idx, image in enumerate(images):
+            metadata["imgs"].append([image.width, image.height])
+        total_images_length = sum(image.height for image in images)
+        if images_number:
+            split_height = total_images_length / images_number
+            format = _get_format_for_size(format, split_height)
+            params["detection_type"] = DETECTION_TYPE.NO_DETECTION.value
+
+        if using_metadata:
+            params["detection_type"] = DETECTION_TYPE.METADATA.value
+
+        per_dir_percentage = PROGRESS_PERCENTAGE["stitch"] / working_dirs_len
+        images = stitch(
+            images,
+            split_height,
+            progress=progress,
+            increament=per_dir_percentage / images_len,
+            metadata = prev_metadata.get("imgs"),
+            **params,
+        )
+        images_len = len(images)
         per_dir_percentage = PROGRESS_PERCENTAGE["save"] / working_dirs_len
         handler.save_all(
             output=sub_output,
@@ -135,6 +164,11 @@ def process(
             progress=progress,
             increament=per_dir_percentage / images_len,
         )
+        if write_metadata:
+            progress.update(progress.value, "Writing metadata file")
+            with open(osp.join(sub_output, METADATA_FILENAME), "w") as fd:
+                json.dump(metadata, fd)
+
     progress.update(100, "Completed")
     progress.finish()
     gc.collect()
@@ -153,6 +187,7 @@ def stitch(
     custom_width: int = StitchDefaults.CUSTOM_WIDTH,
     line_steps: int = StitchDefaults.LINE_STEPS,
     ignorable_pixels: int = StitchDefaults.IGNORABLE_PIXELS,
+    metadata: list[list[int, int]] = None,
 ) -> list[Image]:
     """Stitchs images to specified heigh
 
@@ -167,29 +202,33 @@ def stitch(
         custom_width (int, optional): Defaults to StitchDefaults.CUSTOM_WIDTH.
         line_steps (int, optional): Defaults to StitchDefaults.LINE_STEPS.
         ignorable_pixels (int, optional): Defaults to StitchDefaults.IGNORABLE_PIXELS.
+        metadata list[list[int, int]]: Slice to metadata values, This option overrides split_height, Defaults to None,
 
     Returns:
         list[Images]: stitched images
     """
     if not progress:
         progress = _get_progressbar()
-    detector = select_detector(detection_type=detection_type)
     images = ImageManipulator.resize(images, width_enforce, custom_width)
     combined_img = ImageManipulator.combine(
         images, progress=progress, increament=increament
     )
+    progress.update(progress.value, "Calculating slicing points")
+    detector = select_detector(detection_type=detection_type)
     slice_points = detector.run(
-        combined_img,
-        split_height,
+        combined_img = combined_img,
+        split_height=split_height,
         sensitivity=sensitivity,
         ignorable_pixels=ignorable_pixels,
         scan_step=line_steps,
+        metadata=metadata,
     )
     images = ImageManipulator.slice(combined_img, slice_points)
 
     return images
 
 
+# Fixme: typo excedes
 def _is_size_ok(format: str, size: int) -> bool:
     """Checks if size excedes format size limit
 
@@ -207,6 +246,7 @@ def _is_size_ok(format: str, size: int) -> bool:
     return True
 
 
+# Fixme: fix typo Whene
 def _get_format_for_size(format: str, size: int) -> str:
     """Gets the right format alternative for current size or raise
 

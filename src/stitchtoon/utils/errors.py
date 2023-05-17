@@ -8,3 +8,6 @@ class EmptyImageDir(Exception):
 
 class ImageNotOpenedError(Exception):
     pass
+
+class NoMetadataError(Exception):
+    pass
