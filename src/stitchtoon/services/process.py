@@ -103,7 +103,7 @@ def process(
         prev_metadata = {}
         using_metadata = False
         if slice_to_metadata:
-            if METADATA_FILENAME in os.listdir(input):
+            if METADATA_FILENAME in os.listdir(image_dir.path):
                 using_metadata = True
                 with open(osp.join(image_dir.path, METADATA_FILENAME), "r") as fd:
                     prev_metadata = json.load(fd)
