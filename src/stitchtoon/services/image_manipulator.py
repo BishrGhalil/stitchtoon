@@ -43,7 +43,7 @@ class ImageManipulator:
             return img_objs
 
         new_img_width = 0
-        if enforce_setting == WIDTH_ENFORCEMENT.COPYWRITE.value:
+        if enforce_setting == WIDTH_ENFORCEMENT.COPYRIGHT.value:
             if len(img_objs) >= 2:
                 new_img_width = img_objs[1].width
                 ImageManipulator._resize_img(img_objs[0], new_img_width)

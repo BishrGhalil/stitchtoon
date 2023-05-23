@@ -41,7 +41,7 @@ class WIDTH_ENFORCEMENT(Enum):
     NONE = "none"
     AUTO = "auto"
     FIXED = "fixed"
-    COPYWRITE = "copywrite"
+    COPYRIGHT = "copyright"
 
 
 class DETECTION_TYPE(Enum):

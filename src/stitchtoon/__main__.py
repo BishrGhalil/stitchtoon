@@ -113,7 +113,7 @@ def get_args():
         dest="width_enforcement",
         type=str,
         default="none",
-        choices=("none", "auto", "copywrite"),
+        choices=("none", "auto", "copyright"),
         help="Width Enforcement Technique, Default=None)",
     )
     advanced.add_argument(
