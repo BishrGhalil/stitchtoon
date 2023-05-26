@@ -31,6 +31,9 @@ class TestImageHandler:
         with pytest.raises(FileNotFoundError):
             ImageHandler.load_image(image_file="0239sdfamFJSlamN4")
 
+    def test_load_archive(self, test_archive_file):
+        ImageHandler.load_archive(path=test_archive_file)
+
     def test_save_image(self, test_images_rgb):
         with tempfile.TemporaryDirectory() as tmpdirname:
             img = test_images_rgb[0]

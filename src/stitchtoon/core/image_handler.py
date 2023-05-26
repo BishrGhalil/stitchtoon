@@ -1,14 +1,15 @@
 import functools
 import io
 import os.path as osp
-from os import makedirs
 import zipfile
 from io import BytesIO
+from os import makedirs
+from typing import Optional
 
 from PIL import Image
 from psd_tools import PSDImage
 
-from ..const import FORMATS, PS_FORMATS, _PathType, SUPPORTS_TRANSPARENCY
+from ..const import FORMATS, PS_FORMATS, SUPPORTS_TRANSPARENCY, _PathType
 from ..exc import UnSupportedFormatError
 
 
@@ -118,9 +119,40 @@ class ImageHandler:
         return img
 
     @staticmethod
+    @validate_path("path")
+    def load_archive(path) -> Optional[list[Image.Image]]:
+        """load images from an archive.
+
+        Raises:
+            FileNotFoundError: if 'path' does not exists.
+            ValueError: see zipfile.ZipFile.testzip and zipfile.ZipFile.read for more info.
+        """
+        zf = zipfile.ZipFile(path, "r")
+        zf.testzip()
+        zf_files = zf.namelist()
+
+        img_files = []
+        for file in zf_files:
+            if osp.splitext(file)[1].strip(".").upper() in FORMATS:
+                img_files.append(file)
+        if not img_files:
+            return None
+
+        imgs = []
+        for img_file in img_files:
+            data = zf.read(img_file)
+            membuf = BytesIO(data)
+            img = Image.open(membuf)
+            imgs.append(img)
+
+        return imgs
+
+    @staticmethod
     @validate_format
     @validate_path("out", validate_parents=True)
-    def save_image(*, out: _PathType, image: list[Image], format: str, **params) -> None:
+    def save_image(
+        *, out: _PathType, image: list[Image], format: str, **params
+    ) -> None:
         """save image.
 
         Args:
