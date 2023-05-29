@@ -1,105 +1,31 @@
-import functools
-import io
 import os.path as osp
 import zipfile
 from io import BytesIO
 from os import makedirs
 from typing import Optional
 
-from PIL import Image
+from PIL.Image import Image
+import PIL.Image
 from psd_tools import PSDImage
+from psd_tools.constants import ChannelID
 
 from ..const import FORMATS, PS_FORMATS, SUPPORTS_TRANSPARENCY, _PathType
-from ..exc import UnSupportedFormatError
+from ..decorators import validate_format, validate_path
+from .image_manipulator import ImageManipulator
 
 
-def validate_format(
-    func=None, *, format_arg: str = "format", filename_arg: _PathType = None
-):
-    def decorator_validate_format(func):
-        @functools.wraps(func)
-        def wrapper_validate_format(*args, **kwargs):
-            format = None
-            format = kwargs.get(format_arg)
-            if format is None and filename_arg is None:
-                raise Exception(
-                    f"{format_arg} is not a valid argument for function '{func.__name__}', or has not been passed as keyword argument"
-                )
-            elif filename_arg and kwargs.get(filename_arg) is None:
-                raise Exception(
-                    f"{filename_arg} is not a valid argument for function '{func.__name__}', or has not been passed as keyword argument"
-                )
-            elif filename_arg:
-                filename = kwargs.get(filename_arg)
-                format = osp.splitext(filename)[1]
-                format = format.strip(".")
-            if format.upper() not in FORMATS:
-                raise UnSupportedFormatError(f"file format {format} is not supported.")
-            return func(*args, **kwargs)
-
-        return wrapper_validate_format
-
-    if func is None:
-        return decorator_validate_format
-    return decorator_validate_format(func)
-
-
-def validate_path(path_arg, validate_parents=False):
-    def decorator_validate_path(func):
-        @functools.wraps(func)
-        def wrapper_validate_path(*args, **kwargs):
-            if args:
-                raise Exception(
-                    f"function '{func.__name__}' takes keyword arguments only"
-                )
-            path = kwargs.get(path_arg)
-            if path is None:
-                raise Exception(
-                    f"{path_arg} is not a valid argument for function '{func.__name__}'"
-                )
-            if validate_parents:
-                path = osp.dirname(path)
-            if not osp.lexists(path):
-                raise FileNotFoundError(f"{kwargs.get(path_arg, '')} does not exists.")
-            return func(*args, **kwargs)
-
-        return wrapper_validate_path
-
-    return decorator_validate_path
-
-
-class ImageHandler:
-    @staticmethod
-    @validate_format
-    def convert_format(*, image: Image.Image, format: str) -> Image.Image:
-        """in memory convert image format.
-
-        Args:
-            image (PIL.Image.Image): image to be converted
-            format (str): format to convert image format to
-
-        Returns:
-            PIL.Image.Image: New image specified format
-
-        Raises:
-            UnSupportedFormatError: if format is not supported. see stitchtoon.const.FORMATS.
-        """
-        membuf = BytesIO()
-        image.save(membuf, format=format)
-        converted_image = Image.open(membuf)
-        return converted_image
-
+class ImageIO:
     @staticmethod
     @validate_path("image_file")
     @validate_format(filename_arg="image_file")
-    def load_image(*, image_file: _PathType) -> Image.Image:
-        """load image file into PIL.Image.Image object.
+    def load_image(*, image_file: _PathType) -> Image:
+        """load image file into Image object.
 
         Args:
             image_file (Union[str, Path]): image_file
 
         Returns:
-            PIL.Image.Image
+            Image
 
         Raises:
             FileNotFoundError: if 'image_file' does not exists.
@@ -109,18 +35,22 @@ class ImageHandler:
 
         img = None
 
-        if file_ext in PS_FORMATS:
+        if file_ext.upper() in PS_FORMATS:
             psd = PSDImage.open(image_file)
             img = psd.composite()
             img.format = "psd"
+            if psd.channels >= 4:
+                # the alpha (channel) in photoshop
+                alpha = psd.topil(ChannelID.TRANSPARENCY_MASK)
+                img.putalpha(alpha)
         else:
-            img = Image.open(image_file)
+            img = PIL.Image.open(image_file)
 
         return img
 
     @staticmethod
     @validate_path("path")
-    def load_archive(path) -> Optional[list[Image.Image]]:
+    def load_archive(path) -> Optional[list[Image]]:
         """load images from an archive.
 
         Raises:
@@ -142,7 +72,7 @@ class ImageHandler:
         for img_file in img_files:
             data = zf.read(img_file)
             membuf = BytesIO(data)
-            img = Image.open(membuf)
+            img = PIL.Image.open(membuf)
             imgs.append(img)
 
         return imgs
@@ -157,7 +87,7 @@ class ImageHandler:
 
         Args:
             out (_PathType): output path with image file name, or output path directory.
-            image (list[PIL.Image.Image]): image
+            image (list[Image]): image
             format (str): format to save image in.
             params: parameters to Pillow image writer.
 
@@ -180,7 +110,7 @@ class ImageHandler:
     def archive_images(
         *,
         out: _PathType,
-        images: list[Image.Image],
+        images: list[Image],
         format: str,
         mode: str = "w",
         **params,
@@ -189,7 +119,7 @@ class ImageHandler:
 
         Args:
             out (_PathType): output file name, or output directory (file name will be a time stamp).
-            images (list[Image.Image]): list of images to archive.
+            images (list[Image]): list of images to archive.
             format (str): format to save images in.
             mode (str): archive creation mode. Defaults to 'w'. see zipfile.ZipFile for more info.
             params: parameters for Pillow image writer.
@@ -206,11 +136,11 @@ class ImageHandler:
         zf = zipfile.ZipFile(out, mode)
 
         for idx, image in enumerate(images, 1):
-            img_byte_arr = io.BytesIO()
+            img_byte_arr = BytesIO()
             image.save(img_byte_arr, format, **params)
             img_byte_arr = img_byte_arr.getvalue()
             zf.writestr(
-                ImageHandler.filename_format_handler(f"{idx:03}", format), img_byte_arr
+                ImageIO.filename_format_handler(f"{idx:03}", format), img_byte_arr
             )
         zf.close()
 
@@ -219,7 +149,7 @@ class ImageHandler:
     def save_all(
         *,
         out: _PathType,
-        images: list[Image.Image],
+        images: list[Image],
         format: str,
         archive=False,
         convert_modes=True,
@@ -229,8 +159,8 @@ class ImageHandler:
         """save all images to 'out'.
 
         Args:
-            out (_PathType): directory path if archive=False. Otherwise see ImageHandler.archive_images for more info.
-            images (list[PIL.Image.Image]): list of images to save.
+            out (_PathType): directory path if archive=False. Otherwise see ImageIO.archive_images for more info.
+            images (list[Image]): list of images to save.
             format (str): format to save to images in.
             archive: if true, images will be saved into an archive. Defaults to False.
             convert_modes: if true, images modes will be auto converted according to format. Defaults to True
@@ -249,19 +179,18 @@ class ImageHandler:
                 mode = "RGBA"
             else:
                 mode = "RGB"
-            cnvrtd_imgs = ImageHandler.convert_images_mode(images, mode)
-            for img in images:
-                img.close()
+            cnvrtd_imgs = [ImageManipulator.convert_mode(img, mode) for img in images]
+            del images
             images = cnvrtd_imgs
 
         if archive:
-            ImageHandler.archive_images(out=out, images=images, format=format, **params)
+            ImageIO.archive_images(out=out, images=images, format=format, **params)
         else:
             for idx, img in enumerate(images, 1):
                 outpath = osp.join(
-                    out, ImageHandler.filename_format_handler(f"{idx:03}", format)
+                    out, ImageIO.filename_format_handler(f"{idx:03}", format)
                 )
-                ImageHandler.save_image(out=outpath, image=img, format=format, **params)
+                ImageIO.save_image(out=outpath, image=img, format=format, **params)
 
     @staticmethod
     def filename_format_handler(filename: str, ext: str) -> str:
@@ -280,32 +209,3 @@ class ImageHandler:
             filename = f"{osp.splitext(filename)[0]}.{ext}"
 
         return filename
-
-    @staticmethod
-    def convert_images_mode(
-        images: list[Image.Image],
-        mode: str,
-        fill_color: tuple[int, int, int] = (255, 255, 255),
-    ) -> list[Image.Image]:
-        """convert images mode.
-
-        Args:
-            images (list[PIL.Image.Image]): images
-            mode (str): (RGB, RGBA),
-            fill_color (tuple[int, int, int]): color to fill transparent areas. Defaults to (255,255,255).
-
-        Returns:
-            list[Image.Image]: images with new mode.
-        """
-        cnvrtd_imgs = []
-        for img in images:
-            cnvrtd_img = Image.new(mode, img.size, fill_color)
-            cnvrtd_img.filename = img.filename
-            mask = None
-            if mode.upper() == "RGB":
-                channels = img.split()
-                mask = channels[3] if len(channels) > 3 else mask
-            cnvrtd_img.paste(img, mask=mask)
-            cnvrtd_imgs.append(cnvrtd_img)
-
-        return cnvrtd_imgs
