@@ -33,8 +33,5 @@ SUPPORTS_TRANSPARENCY = {"PNG", "WEBP", "PSD", "PSB", "TGA"}
 # Photoshop file formats
 PS_FORMATS = {"PSD", "PSB"}
 
-# Width enforcement values
-WidthEnforce = StrEnum('WidthEnforce', ['NONE', 'AUTO', 'FIXED'])
-
 # Detection type values
 DetectionType = StrEnum("DetectionType", ["FIXED", "PIXEL", "METADATA_FILE"])
