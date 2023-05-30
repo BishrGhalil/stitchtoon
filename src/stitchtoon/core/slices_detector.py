@@ -1,5 +1,7 @@
-from dataclasses import dataclass, field
-from typing import List, Tuple
+from dataclasses import dataclass
+from dataclasses import field
+from typing import List
+from typing import Tuple
 
 from PIL.Image import Image
 

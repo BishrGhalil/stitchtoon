@@ -1,4 +1,5 @@
 import pytest
+
 from stitchtoon.core.image_manipulator import ImageManipulator
 from stitchtoon.exc import UnSupportedFormatError
 

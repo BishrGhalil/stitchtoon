@@ -4,13 +4,17 @@ from io import BytesIO
 from os import makedirs
 from typing import Optional
 
-from PIL.Image import Image
 import PIL.Image
+from PIL.Image import Image
 from psd_tools import PSDImage
 from psd_tools.constants import ChannelID
 
-from ..const import FORMATS, PS_FORMATS, SUPPORTS_TRANSPARENCY, _PathType
-from ..decorators import validate_format, validate_path
+from ..const import FORMATS
+from ..const import PS_FORMATS
+from ..const import SUPPORTS_TRANSPARENCY
+from ..const import _PathType
+from ..decorators import validate_format
+from ..decorators import validate_path
 from .image_manipulator import ImageManipulator
 
 
@@ -25,7 +29,7 @@ class ImageIO:
             image_file (Union[str, Path]): image_file
 
         Returns:
-            Image
+            lazy loaded Image if not a Photoshop format, else a loaded image.
 
         Raises:
             FileNotFoundError: if 'image_file' does not exists.

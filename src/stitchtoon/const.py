@@ -1,6 +1,6 @@
-from typing import Union
-from os import PathLike
 from enum import StrEnum
+from os import PathLike
+from typing import Union
 
 _PathType = Union[str, PathLike]
 

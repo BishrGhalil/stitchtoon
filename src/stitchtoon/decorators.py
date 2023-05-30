@@ -1,8 +1,10 @@
-
-from .exc import UnSupportedFormatError
-from .const import _PathType, FORMATS
 import functools
 import os.path as osp
+
+from .const import FORMATS
+from .const import _PathType
+from .exc import UnSupportedFormatError
+
 
 def validate_format(
     func=None, *, format_arg: str = "format", filename_arg: _PathType = None
@@ -57,5 +59,3 @@ def validate_path(path_arg, validate_parents=False):
         return wrapper_validate_path
 
     return decorator_validate_path
-
-

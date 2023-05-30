@@ -1,5 +1,6 @@
-from stitchtoon.core.slices_detector import SlicesDetector
 import random
+
+from stitchtoon.core.slices_detector import SlicesDetector
 
 
 class TestSlicesDetector:

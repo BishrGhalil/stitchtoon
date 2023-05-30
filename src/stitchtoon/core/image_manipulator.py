@@ -1,7 +1,9 @@
-from ..decorators import validate_format
-from PIL.Image import Image
-import PIL.Image
 from io import BytesIO
+
+import PIL.Image
+from PIL.Image import Image
+
+from ..decorators import validate_format
 
 
 class ImageManipulator:
