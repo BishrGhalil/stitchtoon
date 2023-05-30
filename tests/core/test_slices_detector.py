@@ -2,7 +2,7 @@ from stitchtoon.core.slices_detector import SlicesDetector
 import random
 
 
-class TestImageDetector:
+class TestSlicesDetector:
     def test_stupid_slice_points(self, test_images):
         for i in range(10):
             height = random.randint(100, 50_000)
