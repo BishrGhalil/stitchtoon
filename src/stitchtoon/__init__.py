@@ -1,6 +1,6 @@
 # This file is part of stitchtoon.
 # License: MIT, see the file "LICENSE" for details.
-"""Stitch Toon"""
+"""stitchtoon"""
 
 import os
 from sys import version_info
@@ -31,7 +31,7 @@ def version_helper():
 
 # Information
 __license__ = "MIT"
-__version__ = "1.2.1"
+__version__ = "2.0.0"
 __release__ = False
 __author__ = __maintainer__ = "Beshr Ghalil"
 __email__ = "beshrghalil@porotonmail.com"
@@ -44,4 +44,3 @@ VERSION = version_helper()
 PY3 = version_info[0] >= 3
 
 args = None
-
