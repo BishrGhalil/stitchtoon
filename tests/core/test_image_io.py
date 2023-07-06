@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from stitchtoon.core.image_io import ImageIO
+from PIL.Image import Image
 
 
 class TestImageIO:
@@ -11,6 +12,13 @@ class TestImageIO:
 
         loadded_img = ImageIO.load_image(image_file=img)
         assert loadded_img is not None
+
+    def test_load_all(self, test_images_files):
+        imgs = ImageIO.load_all(files=test_images_files)
+
+        assert len(imgs) == len(test_images_files)
+        for img in imgs:
+            assert isinstance(img, Image)
 
     def test_load_wrong_path_image(self):
         with pytest.raises(FileNotFoundError):
@@ -21,7 +29,7 @@ class TestImageIO:
 
     def test_save_image(self, test_images_rgb, tmp_path):
         img = test_images_rgb[0]
-        ImageIO.save_image(out=tmp_path, image=img, format="jpeg", quality=80)
+        ImageIO.save_image(out=tmp_path / "01", image=img, format="jpeg", quality=80)
 
     def test_save_images_to_wrong_path(self, test_images_rgb):
         with pytest.raises(FileNotFoundError):
@@ -54,11 +62,12 @@ class TestImageIO:
             convert_modes=True,
         )
 
-    def test_save_all_RGBA_to_RGB_no_convert(self, test_images_rgba, tmp_path):
-        with pytest.raises(OSError):
-            ImageIO.save_all(
-                out=tmp_path,
-                images=test_images_rgba,
-                format="jpeg",
-                convert_modes=False,
-            )
+    def test_save_image_RGBA_to_RGB_no_convert(self, test_images_rgba, tmp_path):
+        for img in test_images_rgba:
+            if img.mode == "RGBA":
+                with pytest.raises(OSError):
+                    ImageIO.save_image(
+                        out=tmp_path / "logo.jpeg",
+                        image=img,
+                        format="jpeg",
+                    )

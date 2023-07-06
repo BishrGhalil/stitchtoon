@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from stitchtoon.const import FORMATS
 
 DATA_DIR = Path(__file__).parent / "data"
 
