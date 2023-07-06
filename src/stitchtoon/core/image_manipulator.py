@@ -9,12 +9,13 @@ from ..decorators import validate_format
 class ImageManipulator:
     @staticmethod
     @validate_format
-    def convert_format(*, image: Image, format: str) -> Image:
+    def convert_format(*, image: Image, format: str, **params) -> Image:
         """in memory convert image format.
 
         Args:
             image (Image): image to be converted
             format (str): format to convert image format to
+            params: parameters for Pillow image writer
 
         Returns:
             Image: New image specified format
@@ -23,7 +24,7 @@ class ImageManipulator:
             UnSupportedFormatError: if format is not supported. see stitchtoon.const.FORMATS.
         """
         membuf = BytesIO()
-        image.save(membuf, format=format)
+        image.save(membuf, format=format, **params)
         converted_image = PIL.Image.open(membuf)
         return converted_image
 
