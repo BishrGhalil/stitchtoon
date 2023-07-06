@@ -45,7 +45,8 @@ class ImageManipulator:
             Image: new image with mode (mode).
         """
         cnvrtd_img = PIL.Image.new(mode, image.size, fill_color)
-        cnvrtd_img.filename = image.filename
+        if hasattr(image, "filename"):
+            cnvrtd_img.filename = image.filename
         mask = None
         if mode.upper() == "RGB":
             # TODOO: replace with getchannel
