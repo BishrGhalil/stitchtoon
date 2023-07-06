@@ -120,7 +120,7 @@ class ImageIO:
         """
         if not osp.splitext(out)[1]:
             out = osp.join(out, image.filename)
-        if format in PS_FORMATS:
+        if format.upper() in PS_FORMATS:
             psd = PSDImage.frompil(image)
             psd.save(out)
         else:
