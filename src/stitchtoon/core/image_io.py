@@ -20,6 +20,10 @@ from .image_manipulator import ImageManipulator
 
 
 class ImageIO:
+    error_callback = lambda e: print(
+        f"Exception raised in ImageIO.save_image: {type(e).__name__}: {str(e)}"
+    )
+
     @staticmethod
     @validate_path("image_file")
     @validate_format(filename_arg="image_file")
@@ -55,7 +59,7 @@ class ImageIO:
 
     @staticmethod
     @validate_path("path")
-    def load_archive(path) -> Optional[list[Image]]:
+    def load_archive(path: _PathType) -> Optional[list[Image]]:
         """load images from an archive.
 
         Raises:
@@ -196,6 +200,7 @@ class ImageIO:
             outdirs = osp.dirname(out) if out.splitext()[1] else out
             makedirs(outdirs, exist_ok=True)
 
+        # TODO: only convert incompatible images
         if convert_modes:
             if format in SUPPORTS_TRANSPARENCY:
                 mode = "RGBA"
