@@ -1,3 +1,4 @@
+import multiprocessing
 import os.path as osp
 import zipfile
 from io import BytesIO
@@ -80,6 +81,23 @@ class ImageIO:
             imgs.append(img)
 
         return imgs
+
+    @staticmethod
+    def load_all(*, files: list[_PathType]):
+        pool = multiprocessing.Pool()
+        async_res = [
+            pool.apply_async(
+                ImageIO.load_image,
+                kwds={"image_file": imf},
+                error_callback=ImageIO.error_callback,
+            )
+            for imf in files
+        ]
+
+        pool.close()
+        pool.join()
+
+        return [ar.get(0.5) for ar in async_res]
 
     @staticmethod
     @validate_format
@@ -190,11 +208,19 @@ class ImageIO:
         if archive:
             ImageIO.archive_images(out=out, images=images, format=format, **params)
         else:
+            pool = multiprocessing.Pool()
             for idx, img in enumerate(images, 1):
                 outpath = osp.join(
                     out, ImageIO.filename_format_handler(f"{idx:03}", format)
                 )
-                ImageIO.save_image(out=outpath, image=img, format=format, **params)
+                pool.apply_async(
+                    ImageIO.save_image,
+                    kwds={"out": outpath, "image": img, "format": format, **params},
+                    error_callback=ImageIO.error_callback,
+                )
+
+            pool.close()
+            pool.join()
 
     @staticmethod
     def filename_format_handler(filename: str, ext: str) -> str:
