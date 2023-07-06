@@ -20,3 +20,11 @@ dist/
 .tox/
 
 *.ipynb
+
+.ipynb_checkpoints/
+
+.virtual_documents/
+
+data/mod*
+
+
