@@ -106,14 +106,12 @@ class ImageIO:
     @staticmethod
     @validate_format
     @validate_path("out", validate_parents=True)
-    def save_image(
-        *, out: _PathType, image: list[Image], format: str, **params
-    ) -> None:
+    def save_image(*, out: _PathType, image: Image, format: str, **params) -> None:
         """save image.
 
         Args:
             out (_PathType): output path with image file name, or output path directory.
-            image (list[Image]): image
+            image (Image): image to be saved.
             format (str): format to save image in.
             params: parameters to Pillow image writer.
 
