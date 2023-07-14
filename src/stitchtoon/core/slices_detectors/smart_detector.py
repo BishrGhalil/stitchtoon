@@ -5,9 +5,11 @@ from typing import Union
 import numpy as np
 from PIL.Image import Image
 
+from ...logger import logged
 from .slice import Slice
 
 
+@logged
 def smart_detect(
     images: List[Image],
     height: int,

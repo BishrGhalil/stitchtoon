@@ -2,11 +2,13 @@ import PIL.Image
 from PIL.Image import Image
 
 from ..const import SUPPORTS_TRANSPARENCY
+from ..logger import logged
 from .slices_detectors.slices_detector import Slice
 
 
 class Stitcher:
     @staticmethod
+    @logged(inclass=True)
     def stitch(
         images: list[Image],
         slices: list[Slice],

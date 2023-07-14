@@ -1,8 +1,10 @@
 from PIL.Image import Image
 
+from ...logger import logged
 from .slice import Slice
 
 
+@logged
 def direct_detect(images: list[Image], height: int) -> list[Slice]:
     """detect direct slicing points of images according to height.
 

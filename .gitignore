@@ -7,10 +7,10 @@ src/stitchtoon/__pycache__/
 
 *.pyc
 
-
 build/Build/
 
 dist/
+
 .gitback/
 
 *.pyd
@@ -25,6 +25,6 @@ dist/
 
 .virtual_documents/
 
-data/mod*
+tests/data/*/
 
-
+*.dat

@@ -4,11 +4,13 @@ import PIL.Image
 from PIL.Image import Image
 
 from ..decorators import validate_format
+from ..logger import logged
 
 
 class ImageManipulator:
     @staticmethod
     @validate_format
+    @logged(inclass=True)
     def convert_format(*, image: Image, format: str, **params) -> Image:
         """in memory convert image format.
 
@@ -29,6 +31,7 @@ class ImageManipulator:
         return converted_image
 
     @staticmethod
+    @logged(inclass=True)
     def convert_mode(
         image: list[Image],
         mode: str,
@@ -56,6 +59,7 @@ class ImageManipulator:
         return cnvrtd_img
 
     @classmethod
+    @logged(inclass=True)
     def resize_all_width(cls, images: Image, value=None):
         if value is None:
             return cls._resize_all_width_auto(images)
@@ -63,6 +67,7 @@ class ImageManipulator:
             return cls._resize_all_width_fixed(images, value)
 
     @classmethod
+    @logged(inclass=True)
     def _resize_all_width_fixed(cls, images: Image, value: int) -> list[Image]:
         resized_imgs = []
         for image in images:
@@ -72,10 +77,12 @@ class ImageManipulator:
         return resized_imgs
 
     @classmethod
+    @logged(inclass=True)
     def _resize_all_width_auto(cls, images: Image) -> list[Image]:
         pass
 
     @classmethod
+    @logged(inclass=True)
     def resize(cls, img, width=None, height=None, respect_ratio=True):
         if width is None and height is None:
             raise RuntimeError("at least one of (width, height) should not be None")

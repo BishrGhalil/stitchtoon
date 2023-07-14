@@ -16,6 +16,7 @@ from ..const import SUPPORTS_TRANSPARENCY
 from ..const import _PathType
 from ..decorators import validate_format
 from ..decorators import validate_path
+from ..logger import logged
 from .image_manipulator import ImageManipulator
 
 
@@ -27,6 +28,7 @@ class ImageIO:
     @staticmethod
     @validate_path("image_file")
     @validate_format(filename_arg="image_file")
+    @logged(inclass=True)
     def load_image(*, image_file: _PathType) -> Image:
         """load image file into Image object.
 
@@ -59,6 +61,7 @@ class ImageIO:
 
     @staticmethod
     @validate_path("path")
+    @logged(inclass=True)
     def load_archive(path: _PathType) -> Optional[list[Image]]:
         """load images from an archive.
 
@@ -87,6 +90,7 @@ class ImageIO:
         return imgs
 
     @staticmethod
+    @logged(inclass=True)
     def load_all(*, files: list[_PathType]):
         pool = multiprocessing.Pool()
         async_res = [
@@ -106,6 +110,7 @@ class ImageIO:
     @staticmethod
     @validate_format
     @validate_path("out", validate_parents=True)
+    @logged(inclass=True)
     def save_image(*, out: _PathType, image: Image, format: str, **params) -> None:
         """save image.
 
@@ -131,6 +136,7 @@ class ImageIO:
     @staticmethod
     @validate_format
     @validate_path("out", validate_parents=True)
+    @logged(inclass=True)
     def archive_images(
         *,
         out: _PathType,
@@ -170,6 +176,7 @@ class ImageIO:
 
     @staticmethod
     @validate_format
+    @logged(inclass=True)
     def save_all(
         *,
         out: _PathType,
@@ -226,6 +233,7 @@ class ImageIO:
             pool.join()
 
     @staticmethod
+    @logged(inclass=True)
     def filename_format_handler(filename: str, ext: str) -> str:
         """add or change filename extension.
 
