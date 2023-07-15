@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-format = "./pre-commit.sh"
+format = "python ./codeformat.py"
 build="pyinstaller stitchtoon.spec"
 
 [packages]
