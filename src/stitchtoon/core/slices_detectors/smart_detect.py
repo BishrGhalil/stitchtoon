@@ -3,6 +3,7 @@ from typing import List
 from typing import Union
 
 import numpy as np
+import PIL.Image
 from PIL.Image import Image
 
 from ...logger import logged
@@ -18,6 +19,7 @@ def smart_detect(
     sensitivity: int = 100,
     max_height: Union[int, float] = -1,
     min_height: Union[int, float] = -1,
+    division_factor: int = 1,
 ) -> List[Slice]:
     """
     Detects slicing points in the input images using neighboring pixels comparison.
@@ -38,7 +40,9 @@ def smart_detect(
                                         If set to -1, there is no minimum limit. If set to a percentage,
                                         the minimum height is calculated as a percentage of the desired height.
                                         Otherwise, a fixed minimum height value can be provided.
-
+        division_factor (int): Factor to divide images by before processing. A lower value increases
+                               processing accuracy but reduces processing speed. Recommended value is
+                               between 1 and 5. Default value is 1.
     Returns:
         List[Slice]: A list of Slice objects representing the detected slices.
     """
@@ -59,7 +63,6 @@ def smart_detect(
         if len(gray_scale_arr[row]) - hmargins <= hmargins + 1:
             raise RuntimeError("Margins are too big")
 
-        # FIXME: A better approach would be to calculate max and min and compare their difference to threshold
         max_px = -1
         min_px = INF
         for i in range(1, len(gray_scale_arr[row])):
@@ -80,7 +83,13 @@ def smart_detect(
     start = 0
     sp = Slice()
     can_slice = False
+    height //= division_factor
     for idx, img in enumerate(images):
+        if division_factor > 1:
+            img = img.resize(
+                (img.width // division_factor, img.height // division_factor),
+                PIL.Image.Resampling.NEAREST,
+            )
         gray_scale_arr = None
         start = 0
         cur_height += img.height
