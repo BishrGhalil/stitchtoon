@@ -16,6 +16,7 @@ clean:
 	find -depth -name "__logs__" -type d -exec rm -rf -- {} \;
 	find -depth -name "*_cache" -type f -exec rm -rf -- {} \;
 	find -depth -name "*.pyc" -type f -exec rm -rf -- {} \;
+	find -depth -name "*.dat" -type f -exec rm -rf -- {} \;
 	rm -rf dist build stitchtoon.egg-info
 
 .PHONE: clean test
