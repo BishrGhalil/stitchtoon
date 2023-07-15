@@ -1,9 +1,9 @@
 from PIL.Image import Image
 
 from ...logger import logged
-from .direct_detector import direct_detect
+from .direct_detect import direct_detect
 from .slice import Slice
-from .smart_detector import smart_detect
+from .smart_detect import smart_detect
 
 
 # TODO: set a minimum allowed height
