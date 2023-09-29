@@ -7,6 +7,9 @@ from natsort import natsorted
 
 from ..const import FORMATS
 from ..logger import logged
+from typing import Iterable
+
+ScanResult = Iterable[Iterable[str, Iterable[str] | None]]
 
 
 @logged
@@ -43,35 +46,32 @@ def get_format(filename: os.PathLike) -> str:
 
 
 @logged
-def scanimgdir(input: os.PathLike, sort: bool = True) -> tuple[tuple[str, tuple[str]]]:
+def scanimgdir(input_path: os.PathLike) -> ScanResult | tuple:
     """Scan a directory for supported images
 
     Args:
-        input (os.PathLike): directory path
-        sort (bool, optional): natural sorting. Defaults to True.
+        input_path (os.PathLike): directory path
 
     Returns:
         Iterable[ImageDirectory]
     """
 
     images = []
-    for ent in os.scandir(input):
+    for ent in os.scandir(input_path):
         if ent.is_file() and is_supported_img(filename=ent.name):
             images.append(osp.abspath(ent.path))
 
-    if not images:
-        return None
     images = natsorted(images)
-    image_dir = (osp.abspath(input), images)
+    image_dir = (osp.abspath(input_path), images)
     return (image_dir,)
 
 
 @logged
-def walkimgdir(input: os.PathLike, sort: bool = True) -> tuple[tuple[str, tuple[str]]]:
-    """Recursivaly scan a directory for supported images
+def walkimgdir(input_path: os.PathLike, sort: bool = True) -> ScanResult:
+    """Recursively scan a directory for supported images
 
     Args:
-        input (os.PathLike): directory path
+        input_path (os.PathLike): directory path
         sort (bool, optional): natural sorting. Defaults to True.
 
     Returns:
@@ -81,7 +81,7 @@ def walkimgdir(input: os.PathLike, sort: bool = True) -> tuple[tuple[str, tuple[
     images = []
     dirspaths = []
     dirs = []
-    for ent in os.scandir(input):
+    for ent in os.scandir(input_path):
         if ent.is_file() and is_supported_img(filename=ent.name):
             images.append(osp.abspath(ent.path))
 
@@ -90,13 +90,13 @@ def walkimgdir(input: os.PathLike, sort: bool = True) -> tuple[tuple[str, tuple[
 
     if images:
         images = natsorted(images)
-        dirs.append((osp.abspath(input), images))
+        dirs.append((osp.abspath(input_path), images))
 
     if dirspaths:
         dirspaths = natsorted(dirspaths)
 
-    for dir in dirspaths:
-        res = walkimgdir(dir, sort=sort)
+    for _dir in dirspaths:
+        res = walkimgdir(_dir, sort=sort)
         if res:
             dirs.extend(res)
 
@@ -104,11 +104,11 @@ def walkimgdir(input: os.PathLike, sort: bool = True) -> tuple[tuple[str, tuple[
 
 
 @logged
-def scan(input: os.PathLike, recursive: bool = True) -> tuple[tuple[str, tuple[str]]]:
+def scan(input_path: os.PathLike, recursive: bool = True) -> ScanResult:
     """scan a directory for supported images
 
     Args:
-        input (os.PathLike)
+        input_path (os.PathLike)
         recursive (bool, optional) Defaults to True.
 
     Returns:
@@ -116,4 +116,4 @@ def scan(input: os.PathLike, recursive: bool = True) -> tuple[tuple[str, tuple[s
     """
 
     strategy = walkimgdir if recursive else scanimgdir
-    return strategy(osp.abspath(input))
+    return strategy(osp.abspath(input_path))

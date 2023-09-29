@@ -33,7 +33,7 @@ class ImageManipulator:
     @staticmethod
     @logged(inclass=True)
     def convert_mode(
-        image: list[Image],
+        image: Image,
         mode: str,
         fill_color: tuple[int, int, int] = (255, 255, 255),
     ) -> Image:
@@ -60,7 +60,7 @@ class ImageManipulator:
 
     @classmethod
     @logged(inclass=True)
-    def resize_all_width(cls, images: Image, value=None):
+    def resize_all_width(cls, images: list[Image], value=None):
         if value is None:
             return cls._resize_all_width_auto(images)
         else:
@@ -68,7 +68,7 @@ class ImageManipulator:
 
     @classmethod
     @logged(inclass=True)
-    def _resize_all_width_fixed(cls, images: Image, value: int) -> list[Image]:
+    def _resize_all_width_fixed(cls, images: list[Image], value: int) -> list[Image]:
         resized_imgs = []
         for image in images:
             resized_img = cls.resize(image, width=value)
@@ -78,8 +78,8 @@ class ImageManipulator:
 
     @classmethod
     @logged(inclass=True)
-    def _resize_all_width_auto(cls, images: Image) -> list[Image]:
-        pass
+    def _resize_all_width_auto(cls, images: list[Image]) -> list[Image]:
+        raise NotImplementedError
 
     @classmethod
     @logged(inclass=True)

@@ -22,10 +22,10 @@ def smart_detect(
     division_factor: int = 1,
 ) -> List[Slice]:
     """
-    Detects slicing points in the input images using neighboring pixels comparison.
+    Detects slicing points in the input_path images using neighboring pixels comparison.
 
     Args:
-        images (List[Image]): A list of input images.
+        images (List[Image]): A list of input_path images.
         height (int): The desired average height of each slice in pixels.
         step (int): The scan step for searching slice positions. Default is 3.
         hmargins (int): The number of pixels on the left and right sides of the image

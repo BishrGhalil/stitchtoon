@@ -4,7 +4,7 @@ import os
 import sys
 from datetime import datetime
 
-if os.getenv("STITCHTOON_DEBUG").lower() == "true":
+if os.getenv("STITCHTOON_DEBUG") and os.getenv("STITCHTOON_DEBUG").lower() == "true":
     DEFAULT_LOG_LEVEL = logging.DEBUG
 else:
     DEFAULT_LOG_LEVEL = logging.INFO

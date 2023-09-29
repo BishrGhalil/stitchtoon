@@ -20,10 +20,13 @@ from ..logger import logged
 from .image_manipulator import ImageManipulator
 
 
-class ImageIO:
-    error_callback = lambda e: print(
+def error_callback(e: Exception):
+    print(
         f"Exception raised in ImageIO.save_image: {type(e).__name__}: {str(e)}"
     )
+
+
+class ImageIO:
 
     @staticmethod
     @validate_path("image_file")
@@ -39,12 +42,10 @@ class ImageIO:
             lazy loaded Image if not a Photoshop format, else a loaded image.
 
         Raises:
-            FileNotFoundError: if 'image_file' does not exists.
+            FileNotFoundError: if 'image_file' does not exist.
         """
 
         file_ext = osp.splitext(image_file)[1].strip(".")
-
-        img = None
 
         if file_ext.upper() in PS_FORMATS:
             psd = PSDImage.open(image_file)
@@ -66,7 +67,7 @@ class ImageIO:
         """load images from an archive.
 
         Raises:
-            FileNotFoundError: if 'path' does not exists.
+            FileNotFoundError: if 'path' does not exist.
             ValueError: see zipfile.ZipFile.testzip and zipfile.ZipFile.read for more info.
         """
         zf = zipfile.ZipFile(path, "r")
@@ -91,13 +92,13 @@ class ImageIO:
 
     @staticmethod
     @logged(inclass=True)
-    def load_all(*, files: list[_PathType]):
+    def load_all(*, files: tuple[_PathType]):
         pool = multiprocessing.Pool()
         async_res = [
             pool.apply_async(
                 ImageIO.load_image,
                 kwds={"image_file": imf},
-                error_callback=ImageIO.error_callback,
+                error_callback=error_callback,
             )
             for imf in files
         ]
@@ -112,7 +113,7 @@ class ImageIO:
     @validate_path("out", validate_parents=True)
     @logged(inclass=True)
     def save_image(*, out: _PathType, image: Image, format: str, **params) -> None:
-        """save image.
+        """save image into a file.
 
         Args:
             out (_PathType): output path with image file name, or output path directory.
@@ -121,12 +122,10 @@ class ImageIO:
             params: parameters to Pillow image writer.
 
         Raises:
-            FileNotFoundError: if out directory or one of it's parents does not exists.
+            FileNotFoundError: if out directory or one of its parents does not exist.
             UnSupportedFormatError: if format is not supported. see stitchtoon.const.FORMATS.
             OSError: when trying to write RGBA as RGB.
         """
-        if not osp.splitext(out)[1]:
-            out = osp.join(out, image.filename)
         if format.upper() in PS_FORMATS:
             psd = PSDImage.frompil(image)
             psd.save(out)
@@ -138,12 +137,13 @@ class ImageIO:
     @validate_path("out", validate_parents=True)
     @logged(inclass=True)
     def archive_images(
-        *,
-        out: _PathType,
-        images: list[Image],
-        format: str,
-        mode: str = "w",
-        **params,
+            *,
+            out: _PathType,
+            images: list[Image],
+            format: str,
+            mode: str = "w",
+            compress_level=5,
+            **params,
     ) -> None:
         """save images into an archive file.
 
@@ -152,10 +152,11 @@ class ImageIO:
             images (list[Image]): list of images to archive.
             format (str): format to save images in.
             mode (str): archive creation mode. Defaults to 'w'. see zipfile.ZipFile for more info.
+            compress_level (int): compression level 1->9, defaults to 5.
             params: parameters for Pillow image writer.
 
         Raises:
-            FileNotFoundError: if out directory or one of it's parents does not exists.
+            FileNotFoundError: if out directory or one of its parents does not exist.
             UnSupportedFormatError: if format is not supported. see stitchtoon.const.FORMATS.
             OSError: when trying to write RGBA as RGB.
         """
@@ -163,7 +164,9 @@ class ImageIO:
             # TODOO: add support for making psd/psb archives
             raise Exception("Can't make PSD/PSB archive.")
 
-        zf = zipfile.ZipFile(out, mode)
+        zf = zipfile.ZipFile(
+            out, mode, zipfile.ZIP_DEFLATED, compresslevel=compress_level
+        )
 
         for idx, image in enumerate(images, 1):
             img_byte_arr = BytesIO()
@@ -178,19 +181,19 @@ class ImageIO:
     @validate_format
     @logged(inclass=True)
     def save_all(
-        *,
-        out: _PathType,
-        images: list[Image],
-        format: str,
-        archive=False,
-        convert_modes=True,
-        make_dirs=False,
-        **params,
+            *,
+            out: _PathType,
+            images: list[Image],
+            format: str,
+            archive=False,
+            convert_modes=True,
+            make_dirs=False,
+            **params,
     ) -> None:
         """save all images to 'out'.
 
         Args:
-            out (_PathType): directory path if archive=False. Otherwise see ImageIO.archive_images for more info.
+            out (_PathType): directory path if archive=False. Otherwise, see ImageIO.archive_images for more info.
             images (list[Image]): list of images to save.
             format (str): format to save to images in.
             archive: if true, images will be saved into an archive. Defaults to False.
@@ -202,7 +205,7 @@ class ImageIO:
             UnSupportedFormatError: when format is not supported. see stitchtoon.const.FORMATS.
         """
         if make_dirs:
-            outdirs = osp.dirname(out) if out.splitext()[1] else out
+            outdirs = osp.dirname(out) if osp.splitext(out)[1] else out
             makedirs(outdirs, exist_ok=True)
 
         # TODO: only convert incompatible images
@@ -226,7 +229,7 @@ class ImageIO:
                 pool.apply_async(
                     ImageIO.save_image,
                     kwds={"out": outpath, "image": img, "format": format, **params},
-                    error_callback=ImageIO.error_callback,
+                    error_callback=error_callback,
                 )
 
             pool.close()

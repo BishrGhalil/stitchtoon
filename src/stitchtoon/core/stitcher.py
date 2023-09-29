@@ -10,10 +10,10 @@ class Stitcher:
     @staticmethod
     @logged(inclass=True)
     def stitch(
-        images: list[Image],
-        slices: list[Slice],
-        mode="RGBA",
-        fill_color=(255, 255, 255, 0),
+            images: list[Image],
+            slices: list[Slice],
+            mode="RGBA",
+            fill_color=(255, 255, 255, 0),
     ) -> list[Image]:
         new_images = []
         if mode != "RGBA" and len(fill_color) > 3:
@@ -27,10 +27,10 @@ class Stitcher:
                     box=(0, cur_height),
                 )
                 cur_height += p[2] - p[1]
-            new_images.append(img)
             if mode in SUPPORTS_TRANSPARENCY:
                 bbox = img.getbbox()
                 if bbox:
                     img = img.crop(bbox)
+            new_images.append(img)
 
         return new_images

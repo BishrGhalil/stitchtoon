@@ -16,11 +16,13 @@ def validate_format(
             format = kwargs.get(format_arg)
             if format is None and filename_arg is None:
                 raise Exception(
-                    f"{format_arg} is not a valid argument for function '{func.__name__}', or has not been passed as keyword argument"
+                    f"{format_arg} is not a valid argument for function '{func.__name__}', or has not been passed as "
+                    f"keyword argument"
                 )
             elif filename_arg and kwargs.get(filename_arg) is None:
                 raise Exception(
-                    f"{filename_arg} is not a valid argument for function '{func.__name__}', or has not been passed as keyword argument"
+                    f"{filename_arg} is not a valid argument for function '{func.__name__}', or has not been passed "
+                    f"as keyword argument"
                 )
             elif filename_arg:
                 filename = kwargs.get(filename_arg)
