@@ -31,3 +31,7 @@ class TestImageManipulator:
         new_imgs = ImageManipulator.resize_all_width(test_images, new_width)
         for img in new_imgs:
             assert img.width == new_width
+
+
+    def test_resize_all_width_auto(self, test_images):
+        ImageManipulator.resize_all_width(test_images)
