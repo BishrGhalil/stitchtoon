@@ -11,11 +11,11 @@ from .slice import Slice
 
 
 @logged
-def smart_detect(
+def pixel_detect(
     images: List[Image],
     height: int,
     step: int = 3,
-    hmargins: int = 0,
+    x_margins: int = 0,
     sensitivity: int = 100,
     max_height: Union[int, float] = -1,
     min_height: Union[int, float] = -1,
@@ -28,7 +28,7 @@ def smart_detect(
         images (List[Image]): A list of input_path images.
         height (int): The desired average height of each slice in pixels.
         step (int): The scan step for searching slice positions. Default is 3.
-        hmargins (int): The number of pixels on the left and right sides of the image
+        x_margins (int): The number of pixels on the left and right sides of the image
                         to exclude from slice detection. Default is 0.
         sensitivity (int): The accuracy of slice detection in percentage. Default is 100%.
         max_height (Union[int, float]): The maximum height of each slice in pixels.
@@ -60,7 +60,7 @@ def smart_detect(
     threshold = int(255 * (1 - (sensitivity / 100)))
 
     def is_valid_slice_position(gray_scale_arr, row):
-        if len(gray_scale_arr[row]) - hmargins <= hmargins + 1:
+        if len(gray_scale_arr[row]) - x_margins <= x_margins + 1:
             raise RuntimeError("Margins are too big")
 
         max_px = -1

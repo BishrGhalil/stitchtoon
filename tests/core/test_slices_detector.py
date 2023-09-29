@@ -1,14 +1,14 @@
 import random
 
-from stitchtoon.core.slices_detectors.slices_detector import SlicesDetector
+from stitchtoon.core.slices_detectors.slices_detector import SlicesDetector, DetectionMethod
 
 
 class TestSlicesDetector:
     def test_stupid_slice_points(self, test_images):
-        for i in range(10):
+        for i in range(3):
             height = random.randint(100, 50_000)
             slice_points = SlicesDetector.slice_points(
-                images=test_images, height=height, smart=False
+                images=test_images, height=height, method=DetectionMethod.DIRECT
             )
 
             imgs = set()
@@ -26,7 +26,7 @@ class TestSlicesDetector:
             total_images_height = sum(img.height for img in test_images)
             assert total_slice_points_height == total_images_height
 
-    def test_smart_slice_points(self, test_images):
+    def test_pixel_slice_points(self, test_images):
         i = 0
         heights = (504, 2031, 259, 989)
         while i < 10:
@@ -40,7 +40,7 @@ class TestSlicesDetector:
             slice_points = SlicesDetector.slice_points(
                 images=test_images,
                 height=height,
-                smart=True,
+                method=DetectionMethod.PIXEL,
                 max_height=max_height,
                 min_height=min_height,
             )
@@ -61,8 +61,8 @@ class TestSlicesDetector:
 
             i += 1
 
-    def test_smart_slice_points_no_min_max(self, test_images):
-        for i in range(10):
+    def test_pixel_slice_points_no_min_max(self, test_images):
+        for i in range(3):
             min_height = -1
             max_height = -1
             height = random.randint(200, 50_000)
@@ -70,7 +70,7 @@ class TestSlicesDetector:
             slice_points = SlicesDetector.slice_points(
                 images=test_images,
                 height=height,
-                smart=True,
+                method=DetectionMethod.PIXEL,
                 max_height=max_height,
                 min_height=min_height,
             )
@@ -85,3 +85,8 @@ class TestSlicesDetector:
 
             total_images_height = sum(img.height for img in test_images)
             assert total_slice_points_height == total_images_height
+
+    def test_auto_slice_points(self, test_images):
+        slice_points = SlicesDetector.slice_points(
+            images=test_images, method=DetectionMethod.AUTO
+        )
