@@ -79,7 +79,9 @@ class ImageManipulator:
     @classmethod
     @logged(inclass=True)
     def _resize_all_width_auto(cls, images: list[Image]) -> list[Image]:
-        raise NotImplementedError
+        widths, heights = zip(*(img.size for img in images))
+        new_width = min(widths)
+        return cls._resize_all_width_fixed(images, value=new_width)
 
     @classmethod
     @logged(inclass=True)
