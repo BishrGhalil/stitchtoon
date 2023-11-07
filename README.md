@@ -5,6 +5,9 @@
   </p>
   <p>
     A GUI version is available at <a href="https://github.com/BishrGhalil/stitchtoon-gui"><b>Stitchtoon GUI</b></a>
+
+ <a href="https://discord.gg/vgWyc3tNnK">Discord Server</a>.
+
   </p>
   <a href="https://github.com/BishrGhalil/stitchtoon/releases/latest">
     <img src="https://img.shields.io/github/v/release/BishrGhalil/stitchtoon">
