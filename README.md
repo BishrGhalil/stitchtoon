@@ -9,6 +9,7 @@
  <a href="https://discord.gg/vgWyc3tNnK">Discord Server</a>.
 
   </p>
+    <img src="https://github.com/BishrGhalil/stitchtoon/actions/workflows/python-test.yml/badge.svg?branch=new-api">
   <a href="https://github.com/BishrGhalil/stitchtoon/releases/latest">
     <img src="https://img.shields.io/github/v/release/BishrGhalil/stitchtoon">
   </a>
