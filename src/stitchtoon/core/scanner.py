@@ -9,7 +9,7 @@ from ..const import FORMATS
 from ..logger import logged
 from typing import Iterable
 
-ScanResult = Iterable[Iterable[str, Iterable[str] | None]]
+ScanResult = Iterable[tuple[str, list[str]]]
 
 
 @logged
