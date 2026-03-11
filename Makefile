@@ -9,6 +9,26 @@ install:
 test:
 	${PYTHON} -m pytest
 
+# ---------------------------------------------------------------------------
+# Benchmarks
+#
+#   make bench                         run all benchmarks
+#   make bench BENCH_FILTER=detection  run only names containing "detection"
+#   make bench-profile BENCH_FILTER=pipeline/pixel+jpeg/small
+#   make bench-profile BENCH_FILTER=pipeline/pixel+jpeg/small BENCH_SAVE_PROF=out.prof
+#   make bench-list                    list available benchmarks
+# ---------------------------------------------------------------------------
+bench:
+	${PYTHON} -m benchmarks $(if $(BENCH_FILTER),--filter $(BENCH_FILTER),)
+
+bench-profile:
+	${PYTHON} -m benchmarks --profile \
+		$(if $(BENCH_FILTER),--filter $(BENCH_FILTER),) \
+		$(if $(BENCH_SAVE_PROF),--save-prof $(BENCH_SAVE_PROF),)
+
+bench-list:
+	${PYTHON} -m benchmarks --list
+
 clean:
 	find -depth -name __pycache__ -type d -exec rm -r -- {} \;
 	find -depth -name "*.log" -type f -exec rm -rf -- {} \;
@@ -17,6 +37,7 @@ clean:
 	find -depth -name "*_cache" -type f -exec rm -rf -- {} \;
 	find -depth -name "*.pyc" -type f -exec rm -rf -- {} \;
 	find -depth -name "*.dat" -type f -exec rm -rf -- {} \;
+	find -depth -name "*.prof" -type f -exec rm -rf -- {} \;
 	rm -rf dist build stitchtoon.egg-info
 
-.PHONE: clean test
+.PHONY: all install test bench bench-profile bench-list clean

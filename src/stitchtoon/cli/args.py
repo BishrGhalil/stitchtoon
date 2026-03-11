@@ -20,7 +20,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=VERSION)
 
     # Positional arguments
-    parser.add_argument("input", metavar="INPUT", help="Input directory path")
+    parser.add_argument(
+        "input",
+        metavar="INPUT",
+        help="Input path: a directory of images or a .zip archive",
+    )
     parser.add_argument("output", metavar="OUTPUT", help="Output directory path")
 
     # I/O options
@@ -81,13 +85,6 @@ def build_parser() -> argparse.ArgumentParser:
         description="Fine-tuning options only used when --method=pixel",
     )
     px.add_argument(
-        "--step",
-        type=int,
-        default=3,
-        metavar="N",
-        help="Search step size when scanning for valid slice rows",
-    )
-    px.add_argument(
         "--x-margins",
         type=int,
         default=0,
@@ -125,6 +122,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Downscale factor applied before detection (1-5). "
              "Higher values are faster but less accurate",
     )
+    px.add_argument(
+        "--window",
+        type=int,
+        default=1,
+        metavar="N",
+        help="Number of consecutive valid rows required to confirm a slice "
+             "position. 1 = single-row check (default). Values of 5-20 add "
+             "robustness against isolated clean rows in noisy content",
+    )
 
     return parser
 
@@ -151,5 +157,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         val = getattr(args, attr)
         if val != -1 and val == int(val):
             setattr(args, attr, int(val))
+
+    if args.window < 1:
+        parser.error("--window must be >= 1")
 
     return args
