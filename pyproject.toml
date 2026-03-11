@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "stitchtoon"
-version = "2.0.0"
+version = "2.1.0"
 authors = [
   { name="Beshr Alghalil", email="beshrghalil@protonmail.com" },
 ]
@@ -18,6 +18,7 @@ dependencies = [
     'pillow',
     'progress',
 ]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -28,16 +29,14 @@ classifiers = [
 "Homepage" = "https://github.com/BishrGhalil/stitchtoon"
 "Bug Tracker" = "https://github.com/BishrGhalil/issues"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
+    "pytest>=8.3.5",
     "black",
     "flake8",
     "isort",
     "tox",
     "mypy",
-]
-test = [
-    "pytest",
 ]
 
 [project.scripts]
