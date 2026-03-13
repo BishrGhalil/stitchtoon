@@ -25,7 +25,7 @@ def is_supported_img(*, format: str = None, filename: os.PathLike = None) -> boo
     """
 
     format = format or osp.splitext(filename)[1]
-    format = format.strip(".").upper()
+    format = format.strip(".")
     if format in FORMATS:
         return True
     return False

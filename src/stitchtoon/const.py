@@ -10,28 +10,28 @@ METADATA_FILENAME = ".stitching_metadata.json"
 MAX_IMAGE_SIZE = 100_000
 
 # Supported formats
-FORMATS = {"JPEG", "PNG", "WEBP", "PSD", "PSB", "BMP", "TIFF", "TGA"}
+FORMATS = {"jpeg", "png", "webp", "psd", "psb", "bmp", "tiff", "tga"}
 
 # Mapper to be used when a format's max size exceeded
-FORMAT_SIZE_MAPPER = {"PSD": "PSB"}
+FORMAT_SIZE_MAPPER = {"psd": "psb"}
 
 # Formats size limits
 FORMATS_LIMITS = {
-    "JPEG": 65_535,
-    "WEBP": 16_383,
-    "PNG": MAX_IMAGE_SIZE,
-    "PSD": 30_000,
-    "PSB": MAX_IMAGE_SIZE,
-    "TIFF": 16_383,
-    "BMP": MAX_IMAGE_SIZE,
-    "TGA": MAX_IMAGE_SIZE,
+    "jpeg": 65_535,
+    "webp": 16_383,
+    "png": MAX_IMAGE_SIZE,
+    "psd": 30_000,
+    "psb": MAX_IMAGE_SIZE,
+    "tiff": 16_383,
+    "bmp": MAX_IMAGE_SIZE,
+    "tga": MAX_IMAGE_SIZE,
 }
 
 # Formats supporting transparency
-SUPPORTS_TRANSPARENCY = {"PNG", "WEBP", "PSD", "PSB", "TGA"}
+SUPPORTS_TRANSPARENCY = {"png", "webp", "psd", "psb", "tga"}
 
 # Photoshop file formats
-PS_FORMATS = {"PSD", "PSB"}
+PS_FORMATS = {"psd", "psb"}
 
 # Detection type values
 DetectionType = StrEnum("DetectionType", ["FIXED", "PIXEL", "METADATA_FILE"])

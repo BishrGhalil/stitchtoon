@@ -28,7 +28,7 @@ def validate_format(
                 filename = kwargs.get(filename_arg)
                 format = osp.splitext(filename)[1]
                 format = format.strip(".")
-            if format.upper() not in FORMATS:
+            if format not in FORMATS:
                 raise UnSupportedFormatError(f"file format {format} is not supported.")
             return func(*args, **kwargs)
 

@@ -47,7 +47,7 @@ class ImageIO:
 
         file_ext = osp.splitext(image_file)[1].strip(".")
 
-        if file_ext.upper() in PS_FORMATS:
+        if file_ext in PS_FORMATS:
             psd = PSDImage.open(image_file)
             img = psd.composite()
             img.format = "psd"
@@ -76,7 +76,7 @@ class ImageIO:
 
         img_files = []
         for file in zf_files:
-            if osp.splitext(file)[1].strip(".").upper() in FORMATS:
+            if osp.splitext(file)[1].strip(".") in FORMATS:
                 img_files.append(file)
         if not img_files:
             return None
@@ -126,7 +126,7 @@ class ImageIO:
             UnSupportedFormatError: if format is not supported. see stitchtoon.const.FORMATS.
             OSError: when trying to write RGBA as RGB.
         """
-        if format.upper() in PS_FORMATS:
+        if format in PS_FORMATS:
             psd = PSDImage.frompil(image)
             psd.save(out)
         else:

@@ -31,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     io = parser.add_argument_group("I/O Options")
     io.add_argument(
         "-f", "--format",
-        default="jpg",
+        default="jepg",
         metavar="FORMAT",
         help=f"Output image format. Supported: {', '.join(sorted(FORMATS))}",
     )
@@ -140,7 +140,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     args = parser.parse_args(argv)
 
     # Validate format
-    args.format = args.format.strip(".").upper()
+    args.format = args.format.strip(".")
     if args.format not in FORMATS:
         parser.error(
             f"Unsupported format '{args.format}'. "
