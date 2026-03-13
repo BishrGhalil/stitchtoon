@@ -73,12 +73,12 @@ def _load_archive(zip_path: Any) -> None:
 
 def _save_all_jpeg(images: Any) -> None:
     with tempfile.TemporaryDirectory() as tmp:
-        ImageIO.save_all(out=tmp, images=images, format="JPEG", quality=85)
+        ImageIO.save_all(out=tmp, images=images, format="jpeg", quality=85)
 
 
 def _save_all_png(images: Any) -> None:
     with tempfile.TemporaryDirectory() as tmp:
-        ImageIO.save_all(out=tmp, images=images, format="PNG")
+        ImageIO.save_all(out=tmp, images=images, format="png")
 
 
 def _save_archive(images: Any) -> None:
@@ -86,7 +86,7 @@ def _save_archive(images: Any) -> None:
         ImageIO.save_all(
             out=str(Path(tmp) / "out.zip"),
             images=images,
-            format="JPEG",
+            format="jpeg",
             archive=True,
             quality=85,
         )
@@ -98,41 +98,44 @@ BENCHMARKS: list[Benchmark] = [
         fn=_load_all_jpeg,
         setup=_setup_load_jpeg,
         iterations=5,
-        description="load_all – 5 JPEG files (800×3000)",
+        description="load_all – 5 jpeg files (800×3000)",
+        data_type="file_paths",
     ),
     Benchmark(
         name="io/load/png/5-images",
         fn=_load_all_png,
         setup=_setup_load_png,
         iterations=5,
-        description="load_all – 5 PNG files (800×3000)",
+        description="load_all – 5 png files (800×3000)",
+        data_type="file_paths",
     ),
     Benchmark(
         name="io/load/zip/5-images",
         fn=_load_archive,
         setup=_setup_load_zip,
         iterations=5,
-        description="load_archive – 5 JPEG files in zip (800×3000)",
+        description="load_archive – 5 jpeg files in zip (800×3000)",
+        data_type="zip_path",
     ),
     Benchmark(
         name="io/save/jpeg/5-images",
         fn=_save_all_jpeg,
         setup=_setup_save,
         iterations=5,
-        description="save_all – 5 JPEG files (800×3000)",
+        description="save_all – 5 jpeg files (800×3000)",
     ),
     Benchmark(
         name="io/save/png/5-images",
         fn=_save_all_png,
         setup=_setup_save,
         iterations=5,
-        description="save_all – 5 PNG files (800×3000)",
+        description="save_all – 5 png files (800×3000)",
     ),
     Benchmark(
         name="io/save/zip/5-images",
         fn=_save_archive,
         setup=_setup_save,
         iterations=5,
-        description="save_all (archive) – 5 JPEG files in zip (800×3000)",
+        description="save_all (archive) – 5 jpeg files in zip (800×3000)",
     ),
 ]

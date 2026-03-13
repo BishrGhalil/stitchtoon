@@ -60,7 +60,7 @@ options:
 
 I/O Options:
   -f FORMAT, --format FORMAT
-                        Output image format. Supported: BMP, JPEG, PNG, PSB, PSD, TGA, TIFF, WEBP (default: jpg)
+                        Output image format. Supported: BMP, jpeg, png, PSB, PSD, tga, tiff, webp (default: jpg)
   -r, --recursive, --no-recursive
                         Recursively scan subdirectories (default: True)
   --archive             Pack each output directory into a zip archive (default: False)

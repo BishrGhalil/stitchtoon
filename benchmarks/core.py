@@ -23,6 +23,11 @@ class Benchmark:
     setup: Optional[Callable[[], Any]] = None
     iterations: int = 5
     description: str = ""
+    # Declares the type of argument fn expects when --data is used.
+    # "images"     -> list[PIL.Image.Image]
+    # "file_paths" -> list[str]  (paths to image files on disk)
+    # "zip_path"   -> str        (path to a zip archive)
+    data_type: str = "images"
 
 
 @dataclass

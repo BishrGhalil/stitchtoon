@@ -11,6 +11,10 @@ Usage
     # Run only benchmarks whose name matches a pattern:
     python -m benchmarks --filter detection
 
+    # Benchmark on your own images instead of synthetic data:
+    python -m benchmarks --data /path/to/images/          # directory
+    python -m benchmarks --data /path/to/images.zip       # zip archive
+
     # Profile a single benchmark instead of timing it:
     python -m benchmarks --profile --filter pipeline/pixel+jpeg/small
 
@@ -25,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
@@ -73,6 +78,74 @@ def _print_table(results: list[BenchmarkResult]) -> None:
     for r in results:
         print(_fmt_result(r))
     print(_DIVIDER)
+
+
+def _load_custom_images(data_path: Path):
+    """Load PIL images from a directory or zip archive."""
+    from stitchtoon.core.image_io import ImageIO
+
+    if data_path.suffix.lower() == ".zip":
+        images = ImageIO.load_archive(path=str(data_path))
+    else:
+        exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+        files = tuple(
+            str(p) for p in sorted(data_path.iterdir()) if p.suffix.lower() in exts
+        )
+        if not files:
+            print(f"No image files found in '{data_path}'.", file=sys.stderr)
+            sys.exit(1)
+        images = ImageIO.load_all(files=files)
+
+    if not images:
+        print(f"Could not load any images from '{data_path}'.", file=sys.stderr)
+        sys.exit(1)
+
+    return images
+
+
+def _apply_custom_data(benchmarks: list[Benchmark], data_path: Path) -> list[Benchmark]:
+    """Return new Benchmark objects whose setup loads from *data_path*."""
+    is_zip = data_path.suffix.lower() == ".zip"
+    result: list[Benchmark] = []
+
+    for bench in benchmarks:
+        if bench.data_type == "images":
+            images = _load_custom_images(data_path)
+            new_bench = replace(bench, setup=lambda _imgs=images: _imgs)
+        elif bench.data_type == "file_paths":
+            if is_zip:
+                print(
+                    f"  Skipping '{bench.name}': expects file paths but --data is a zip. "
+                    "Use a directory instead.",
+                    file=sys.stderr,
+                )
+                continue
+            exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+            paths = [
+                str(p) for p in sorted(data_path.iterdir()) if p.suffix.lower() in exts
+            ]
+            if not paths:
+                print(
+                    f"  Skipping '{bench.name}': no image files found in '{data_path}'.",
+                    file=sys.stderr,
+                )
+                continue
+            new_bench = replace(bench, setup=lambda _p=paths: _p)
+        elif bench.data_type == "zip_path":
+            if not is_zip:
+                print(
+                    f"  Skipping '{bench.name}': expects a zip archive but --data is a directory. "
+                    "Use a .zip file instead.",
+                    file=sys.stderr,
+                )
+                continue
+            new_bench = replace(bench, setup=lambda _z=str(data_path): _z)
+        else:
+            new_bench = bench
+
+        result.append(new_bench)
+
+    return result
 
 
 def _select(pattern: Optional[str]) -> list[Benchmark]:
@@ -147,6 +220,15 @@ def _build_parser() -> argparse.ArgumentParser:
         help="When profiling, also write a .prof file (usable with snakeviz)",
     )
     parser.add_argument(
+        "--data",
+        metavar="PATH",
+        default=None,
+        help=(
+            "Use real images instead of synthetic data. "
+            "PATH may be a directory of images or a .zip archive."
+        ),
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         default=False,
@@ -160,6 +242,14 @@ def main() -> int:
     args = parser.parse_args()
 
     selected = _select(args.filter)
+
+    if args.data:
+        data_path = Path(args.data)
+        if not data_path.exists():
+            print(f"--data path does not exist: '{data_path}'", file=sys.stderr)
+            return 1
+        print(f"Using custom data: {data_path}\n")
+        selected = _apply_custom_data(selected, data_path)
 
     if args.list:
         print(f"{'Name':<{_COL_NAME}}  {'Iters':>6}  Description")

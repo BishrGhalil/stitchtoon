@@ -10,13 +10,14 @@ METADATA_FILENAME = ".stitching_metadata.json"
 MAX_IMAGE_SIZE = 100_000
 
 # Supported formats
-FORMATS = {"jpeg", "png", "webp", "psd", "psb", "bmp", "tiff", "tga"}
+FORMATS = {"jpg", "jpeg", "png", "webp", "psd", "psb", "bmp", "tiff", "tga"}
 
 # Mapper to be used when a format's max size exceeded
 FORMAT_SIZE_MAPPER = {"psd": "psb"}
 
 # Formats size limits
 FORMATS_LIMITS = {
+    "jpg": 65_535,
     "jpeg": 65_535,
     "webp": 16_383,
     "png": MAX_IMAGE_SIZE,
