@@ -1,17 +1,59 @@
-name: Publish to PyPI.org
+name: Publish to PyPI and Create Release
+
 on:
-  release:
-    types: [published]
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: write
+
 jobs:
-  pypi:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: python3 -m pip install --upgrade build && python3 -m build
-      - name: Publish package
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ steps.get_version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.get_version.outputs.tag }}
+          git push origin ${{ steps.get_version.outputs.tag }}
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          name: Release ${{ steps.get_version.outputs.tag }}
+          generate_release_notes: true
+
+      - name: Build package
+        if: steps.check_tag.outputs.exists == 'false'
+        run: python3 -m pip install --upgrade build && python3 -m build
+
+      - name: Publish to PyPI
+        if: steps.check_tag.outputs.exists == 'false'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
