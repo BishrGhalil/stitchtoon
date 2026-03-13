@@ -37,6 +37,7 @@ dev = [
     "isort",
     "tox",
     "mypy",
+    "build>=1.2.2.post1",
 ]
 
 [project.scripts]
