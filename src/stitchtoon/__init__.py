@@ -1,6 +1,6 @@
 # This file is part of stitchtoon.
 # License: MIT, see the file "LICENSE" for details.
-"""Stitch Toon"""
+"""stitchtoon"""
 
 import os
 from sys import version_info
@@ -31,7 +31,7 @@ def version_helper():
 
 # Information
 __license__ = "MIT"
-__version__ = "1.2.1"
+__version__ = "2.1.0"
 __release__ = False
 __author__ = __maintainer__ = "Beshr Ghalil"
 __email__ = "beshrghalil@porotonmail.com"
@@ -44,25 +44,3 @@ VERSION = version_helper()
 PY3 = version_info[0] >= 3
 
 args = None
-
-from .services.image_directory import Image
-from .services.image_directory import ImageDirectory
-from .services.process import process
-from .services.process import stitch
-from .services.progressbar import ProgressHandler
-from .services.scanner import is_supported_img
-from .services.scanner import scan
-from .services.scanner import scanimgdir
-from .services.scanner import walkimgdir
-
-__all__ = [
-    Image,
-    ImageDirectory,
-    scan,
-    scanimgdir,
-    walkimgdir,
-    process,
-    stitch,
-    is_supported_img,
-    ProgressHandler,
-]

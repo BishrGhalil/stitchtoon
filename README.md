@@ -9,6 +9,7 @@
  <a href="https://discord.gg/vgWyc3tNnK">Discord Server</a>.
 
   </p>
+    <img src="https://github.com/BishrGhalil/stitchtoon/actions/workflows/python-test.yml/badge.svg?branch=new-api">
   <a href="https://github.com/BishrGhalil/stitchtoon/releases/latest">
     <img src="https://img.shields.io/github/v/release/BishrGhalil/stitchtoon">
   </a>
@@ -38,66 +39,45 @@ pip install .
 ```
 
 ## Basic usage
-```
-stitchtoon -i <input-path> -s <split-height> -o <output-path>
-```
-Options
-```
-usage: __main__.py [-h] [-V] -i INPUT -o OUTPUT -s SIZE -n IMAGES_NUMBER
-                   [-t {png,jpeg,jpg,webp,psb,psd}] [-r] [-a] [-p]
-                   [-w {none,auto,copyright}] [-d {none,pixel}] [-e [0-100]]
-                   [-q [1-100]] [-g IGNORABLE_PIXELS] [-l [1-100]]
-                   [--write-metadata] [--slice-to-metadata]
-                   [--log-level {error,debug,info}] [--log-file LOG_FILE]
+ ```
+ usage: stitchtoon [-h] [--version] [-f FORMAT] [-r | --recursive | --no-recursive] [--archive] [--width PX]
+                  [--progress | --no-progress] [-m {pixel,direct}] [-H PX]
+                  [--x-margins PX] [--sensitivity PCT] [--max-height VALUE]
+                  [--min-height VALUE] [--division-factor N] [--window N]
+                  INPUT OUTPUT
+
+Stitch and slice webtoon/manhwa/manhua raws.
+
+positional arguments:
+  INPUT                 Input path: a directory of images or a .zip archive
+  OUTPUT                Output directory path
 
 options:
   -h, --help            show this help message and exit
-  -V, --version         show program's version number and exit
-  -i INPUT, --input INPUT
-                        Sets the path of Input Folder
-  -o OUTPUT, --output OUTPUT
-                        Saves at specified output path
-  -s SIZE, --size SIZE  Sets the value of the Rough Panel Height And Width,
-                        hXw
-  -n IMAGES_NUMBER, --images-number IMAGES_NUMBER
-                        Sets the value of the Rough Panel Height And Width,
-                        hXw
-  -t {png,jpeg,jpg,webp,psb,psd}, --type {png,jpeg,jpg,webp,psb,psd}
-                        Sets the type/format of the Output Image Files
-  -r, --recursive
-  -a, --as-archive
-  -p, --progress        Shows a progress bar
+  --version             show program's version number and exit
+  --progress, --no-progress
+                        Show a progress bar while processing (default: True)
 
-Advanced:
-  -w {none,auto,copyright}, --width-enforcement {none,auto,copyright}
-                        Width Enforcement Technique, Default=None)
-  -d {none,pixel}, --detection-type {none,pixel}
-                        Sets the type of Slice Location Detection,
-                        Default=pixel (Pixel Comparison)
-  -e [0-100], --sensitivity [0-100]
-                        Sets the Object Detection sensitivity Percentage,
-                        Default=90 (10 percent tolerance)
-  -q [1-100], --quality [1-100]
-                        Sets the quality of lossy file types like .jpg if
-                        used, Default=100 (100 percent)
-  -g IGNORABLE_PIXELS, --ignorable_pixels IGNORABLE_PIXELS
-                        Sets the value of Ignorable Border Pixels, Default=5
-                        (5px)
-  -l [1-100], --line-steps [1-100]
-                        Sets the value of Scan Line Step, Default=5 (5px)
-  --write-metadata      Writes metadata file, Used to save current images
-                        sizes so you can slice to the same sizes when
-                        stitching again.
-  --slice-to-metadata   Reads metadata file if available, If not available
-                        slices according to split_height and images_number
-                        options.
+I/O Options:
+  -f FORMAT, --format FORMAT
+                        Output image format. Supported: BMP, jpeg, png, PSB, PSD, tga, tiff, webp (default: jpg)
+  -r, --recursive, --no-recursive
+                        Recursively scan subdirectories (default: True)
+  --archive             Pack each output directory into a zip archive (default: False)
+  --width PX            Normalize all images to this width before processing. If omitted, auto-resize to the minimum width found (default: None)
 
-General:
-  --log-level {error,debug,info}
-                        Sets log level
-  --log-file LOG_FILE   Sets the log file, this supports providing datatime
-                        format.
-```
+Detection Options:
+  -m {pixel,direct}, --method {pixel,direct}
+                        Slice detection method (default: pixel)
+  -H PX, --height PX    Target slice height in pixels. Required for 'pixel' and 'direct' methods (default: None)
 
- 
-> All thanks to [MechTechnology](https://github.com/MechTechnology) for creating [SmartStitch](https://github.com/BishrGhalil/stitchtoon) which is the base of this package.
+Pixel Detection Options:
+  Fine-tuning options only used when --method=pixel
+
+  --x-margins PX        Pixels to ignore on the left and right edges during detection (default: 0)
+  --sensitivity PCT     Detection accuracy (1-100 percent; lower = more permissive) (default: 100)
+  --max-height VALUE    Maximum slice height. -1 means no limit. A float < height is treated as a fraction of --height; an int is treated as pixels (default: -1)
+  --min-height VALUE    Minimum slice height. -1 means no limit. A float < height is treated as a fraction of --height; an int is treated as pixels (default: -1)
+  --division-factor N   Downscale factor applied before detection (1-5). Higher values are faster but less accurate (default: 1)
+  --window N            Consecutive valid rows required to confirm a slice position. 1 = single-row (default). Values of 5-20 add robustness for noisy content (default: 1)
+ ```

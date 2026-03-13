@@ -1,0 +1,276 @@
+#!/usr/bin/env python3
+# This file is part of stitchtoon.
+# License: MIT, see the file "LICENSE" for details.
+"""Benchmark and profiling runner.
+
+Usage
+-----
+    # Run all benchmarks and print a timing table:
+    python -m benchmarks
+
+    # Run only benchmarks whose name matches a pattern:
+    python -m benchmarks --filter detection
+
+    # Benchmark on your own images instead of synthetic data:
+    python -m benchmarks --data /path/to/images/          # directory
+    python -m benchmarks --data /path/to/images.zip       # zip archive
+
+    # Profile a single benchmark instead of timing it:
+    python -m benchmarks --profile --filter pipeline/pixel+jpeg/small
+
+    # Save a .prof file for use with snakeviz / py-spy:
+    python -m benchmarks --profile --save-prof out.prof --filter pipeline/pixel+jpeg/small
+
+    # List available benchmarks without running them:
+    python -m benchmarks --list
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from dataclasses import replace
+from pathlib import Path
+from typing import Optional
+
+from . import bench_detection, bench_image_io, bench_pipeline
+from .core import Benchmark, BenchmarkResult, profile_benchmark, run_benchmark
+
+ALL_BENCHMARKS: list[Benchmark] = (
+    bench_detection.BENCHMARKS
+    + bench_image_io.BENCHMARKS
+    + bench_pipeline.BENCHMARKS
+)
+
+
+_COL_NAME = 42
+_COL_ITERS = 6
+_COL_MEAN = 10
+_COL_STDEV = 10
+_COL_MIN = 10
+_COL_MAX = 10
+
+_HEADER = (
+    f"{'Benchmark':<{_COL_NAME}}"
+    f"{'Iters':>{_COL_ITERS}}"
+    f"{'Mean (s)':>{_COL_MEAN}}"
+    f"{'Stdev (s)':>{_COL_STDEV}}"
+    f"{'Min (s)':>{_COL_MIN}}"
+    f"{'Max (s)':>{_COL_MAX}}"
+)
+_DIVIDER = "-" * len(_HEADER)
+
+
+def _fmt_result(result: BenchmarkResult) -> str:
+    return (
+        f"{result.name:<{_COL_NAME}}"
+        f"{len(result.times):>{_COL_ITERS}}"
+        f"{result.mean:>{_COL_MEAN}.4f}"
+        f"{result.stdev:>{_COL_STDEV}.4f}"
+        f"{result.minimum:>{_COL_MIN}.4f}"
+        f"{result.maximum:>{_COL_MAX}.4f}"
+    )
+
+
+def _print_table(results: list[BenchmarkResult]) -> None:
+    print(_HEADER)
+    print(_DIVIDER)
+    for r in results:
+        print(_fmt_result(r))
+    print(_DIVIDER)
+
+
+def _load_custom_images(data_path: Path):
+    """Load PIL images from a directory or zip archive."""
+    from stitchtoon.core.image_io import ImageIO
+
+    if data_path.suffix.lower() == ".zip":
+        images = ImageIO.load_archive(path=str(data_path))
+    else:
+        exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+        files = tuple(
+            str(p) for p in sorted(data_path.iterdir()) if p.suffix.lower() in exts
+        )
+        if not files:
+            print(f"No image files found in '{data_path}'.", file=sys.stderr)
+            sys.exit(1)
+        images = ImageIO.load_all(files=files)
+
+    if not images:
+        print(f"Could not load any images from '{data_path}'.", file=sys.stderr)
+        sys.exit(1)
+
+    return images
+
+
+def _apply_custom_data(benchmarks: list[Benchmark], data_path: Path) -> list[Benchmark]:
+    """Return new Benchmark objects whose setup loads from *data_path*."""
+    is_zip = data_path.suffix.lower() == ".zip"
+    result: list[Benchmark] = []
+
+    for bench in benchmarks:
+        if bench.data_type == "images":
+            images = _load_custom_images(data_path)
+            new_bench = replace(bench, setup=lambda _imgs=images: _imgs)
+        elif bench.data_type == "file_paths":
+            if is_zip:
+                print(
+                    f"  Skipping '{bench.name}': expects file paths but --data is a zip. "
+                    "Use a directory instead.",
+                    file=sys.stderr,
+                )
+                continue
+            exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+            paths = [
+                str(p) for p in sorted(data_path.iterdir()) if p.suffix.lower() in exts
+            ]
+            if not paths:
+                print(
+                    f"  Skipping '{bench.name}': no image files found in '{data_path}'.",
+                    file=sys.stderr,
+                )
+                continue
+            new_bench = replace(bench, setup=lambda _p=paths: _p)
+        elif bench.data_type == "zip_path":
+            if not is_zip:
+                print(
+                    f"  Skipping '{bench.name}': expects a zip archive but --data is a directory. "
+                    "Use a .zip file instead.",
+                    file=sys.stderr,
+                )
+                continue
+            new_bench = replace(bench, setup=lambda _z=str(data_path): _z)
+        else:
+            new_bench = bench
+
+        result.append(new_bench)
+
+    return result
+
+
+def _select(pattern: Optional[str]) -> list[Benchmark]:
+    if not pattern:
+        return ALL_BENCHMARKS
+    return [b for b in ALL_BENCHMARKS if pattern in b.name]
+
+
+def _run_timing(benchmarks: list[Benchmark]) -> None:
+    results: list[BenchmarkResult] = []
+    total = len(benchmarks)
+    for i, bench in enumerate(benchmarks, 1):
+        print(f"  [{i}/{total}] {bench.name} … ", end="", flush=True)
+        result = run_benchmark(bench)
+        results.append(result)
+        print(f"{result.mean:.4f}s")
+
+    print()
+    _print_table(results)
+
+
+def _run_profiling(benchmarks: list[Benchmark], save_prof: Optional[str]) -> None:
+    if len(benchmarks) != 1:
+        print(
+            f"Warning: --profile expects exactly one benchmark; "
+            f"got {len(benchmarks)}. Using the first match.",
+            file=sys.stderr,
+        )
+
+    bench = benchmarks[0]
+    print(f"Profiling: {bench.name}\n{'─' * 60}")
+
+    if save_prof:
+        # Write a raw .prof file for external tools (snakeviz, py-spy, etc.)
+        import cProfile
+        arg = bench.setup() if bench.setup else None
+        profiler = cProfile.Profile()
+        profiler.enable()
+        bench.fn(arg)
+        profiler.disable()
+        profiler.dump_stats(save_prof)
+        print(f"Profile data saved to: {save_prof}")
+
+    # Always print the text report as well
+    report = profile_benchmark(bench)
+    print(report)
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="python -m benchmarks",
+        description="Run stitchtoon benchmarks and profiling.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "--filter",
+        metavar="PATTERN",
+        default=None,
+        help="Only run benchmarks whose name contains PATTERN",
+    )
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        default=False,
+        help="Profile instead of timing (use --filter to select a single benchmark)",
+    )
+    parser.add_argument(
+        "--save-prof",
+        metavar="FILE",
+        default=None,
+        help="When profiling, also write a .prof file (usable with snakeviz)",
+    )
+    parser.add_argument(
+        "--data",
+        metavar="PATH",
+        default=None,
+        help=(
+            "Use real images instead of synthetic data. "
+            "PATH may be a directory of images or a .zip archive."
+        ),
+    )
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        default=False,
+        help="List available benchmarks and exit",
+    )
+    return parser
+
+
+def main() -> int:
+    parser = _build_parser()
+    args = parser.parse_args()
+
+    selected = _select(args.filter)
+
+    if args.data:
+        data_path = Path(args.data)
+        if not data_path.exists():
+            print(f"--data path does not exist: '{data_path}'", file=sys.stderr)
+            return 1
+        print(f"Using custom data: {data_path}\n")
+        selected = _apply_custom_data(selected, data_path)
+
+    if args.list:
+        print(f"{'Name':<{_COL_NAME}}  {'Iters':>6}  Description")
+        print("-" * 72)
+        for b in ALL_BENCHMARKS:
+            marker = ">" if b in selected else " "
+            print(f"{marker} {b.name:<{_COL_NAME - 2}}  {b.iterations:>6}  {b.description}")
+        return 0
+
+    if not selected:
+        print(f"No benchmarks matched filter '{args.filter}'.", file=sys.stderr)
+        return 1
+
+    if args.profile:
+        _run_profiling(selected, save_prof=args.save_prof)
+    else:
+        print(f"Running {len(selected)} benchmark(s)…\n")
+        _run_timing(selected)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
