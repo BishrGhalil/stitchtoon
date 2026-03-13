@@ -39,13 +39,12 @@ pip install .
 ```
 
 ## Basic usage
- ```
- usage: stitchtoon [-h] [--version] [-f FORMAT] [-r | --recursive | --no-recursive] [--archive] [--width PX]
-                  [--progress | --no-progress] [-m {pixel,direct}] [-H PX]
-                  [--x-margins PX] [--sensitivity PCT] [--max-height VALUE]
-                  [--min-height VALUE] [--division-factor N] [--window N]
-                  INPUT OUTPUT
+```
+$ stitchtoon -H 2000 test/data/jpeg.zip
+```
 
+```
+$ stitchtoon --help
 Stitch and slice webtoon/manhwa/manhua raws.
 
 positional arguments:
@@ -81,3 +80,13 @@ Pixel Detection Options:
   --division-factor N   Downscale factor applied before detection (1-5). Higher values are faster but less accurate (default: 1)
   --window N            Consecutive valid rows required to confirm a slice position. 1 = single-row (default). Values of 5-20 add robustness for noisy content (default: 1)
  ```
+
+# Development
+* run tests
+```
+    $ make test
+```
+* run benchmarks
+```
+    $ make bench
+```
