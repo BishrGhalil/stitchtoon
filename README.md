@@ -32,7 +32,7 @@ pip install stitchtoon
 
 Install from source
 ```
-git clone https://github.com/BishrGhalil/stitchtoon
+git clone https://github.com/beshralghalil/stitchtoon
 cd stitchtoon
 pip instal --user requirements.txt
 pip install .
